@@ -61,6 +61,7 @@
   "ravencoreNode": "lib",
   "dependencies": {
     "async": "*",
+    "ravencore-lib": "underdarkskies/ravencore-lib",
     "ravencore-message": "underdarkskies/ravencore-message",
     "body-parser": "^1.13.3",
     "compression": "^1.6.1",
@@ -70,7 +71,6 @@
     "request": "^2.64.0"
   },
   "peerDependencies": {
-    "ravencore-lib": "underdarkskies/ravencore-lib"
   },
   "devDependencies": {
     "chai": "^3.5.0",
