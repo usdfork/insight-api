@@ -1,10 +1,10 @@
 [
-  {
+    {
   		"poolName": "f2pool",
   		"url": "http://f2pool.com/",
   		"searchStrings": [
-  			"rjnxry5qp9x9deh"
-        "Mined by "
+  			"rjnxry5qp9x9deh",
+        "Mined by ",
         "Mined by rjnxry5qp9x9deh"
   		]
   	},
