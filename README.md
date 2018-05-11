@@ -48,6 +48,20 @@ Or disabled entirely with:
 
 ## API HTTP Endpoints
 
+### Charts: mining-revenue, difficulty, block-interval, block-size 
+* `GET /chart/difficulty`
+
+````json
+{"name":"Difficulty","data":{"x":"height","json":{"height":[206750,206751,....207021],"difficulty":[25348.67328088,25348.67328088,....25348.67328088]},"names":{"height":"Height","difficulty":"Difficulty"}}}
+````
+
+* `GET /charts`
+
+````json
+{"charts":{"block-size":{"name":"Block Size"},"block-interval":{"name":"Block Interval"},"difficulty":{"name":"Difficulty"},"mining-revenue":{"name":"Mining revenue"}}}
+````
+
+
 ### Block
 ```
   /insight-api/block/[:hash]
