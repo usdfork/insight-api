@@ -18,7 +18,7 @@ The API endpoints will be available by default at: `http://localhost:3001/insigh
 
 ## Prerequisites
 
-- [Ravencore Node 3.x](https://github.com/underdarkskies/ravencore-node)
+- [Ravencore Node](https://github.com/underdarkskies/ravencore-node)
 
 **Note:** You can use an existing Ravencoin data directory, however `txindex`, `addressindex`, `timestampindex` and `spentindex` needs to be set to true in `raven.conf`, as well as a few other additional fields.
 
