@@ -18,7 +18,7 @@ The API endpoints will be available by default at: `http://localhost:3001/insigh
 
 ## Prerequisites
 
-- [Ravencore Node 3.x](https://github.com/underdarkskies/ravencore-node)
+- [Ravencore Node](https://github.com/underdarkskies/ravencore-node)
 
 **Note:** You can use an existing Ravencoin data directory, however `txindex`, `addressindex`, `timestampindex` and `spentindex` needs to be set to true in `raven.conf`, as well as a few other additional fields.
 
@@ -47,6 +47,20 @@ Or disabled entirely with:
 
 
 ## API HTTP Endpoints
+
+### Charts: mining-revenue, difficulty, block-interval, block-size 
+* `GET /chart/difficulty`
+
+````json
+{"name":"Difficulty","data":{"x":"height","json":{"height":[206750,206751,....207021],"difficulty":[25348.67328088,25348.67328088,....25348.67328088]},"names":{"height":"Height","difficulty":"Difficulty"}}}
+````
+
+* `GET /charts`
+
+````json
+{"charts":{"block-size":{"name":"Block Size"},"block-interval":{"name":"Block Interval"},"difficulty":{"name":"Difficulty"},"mining-revenue":{"name":"Mining revenue"}}}
+````
+
 
 ### Block
 ```
