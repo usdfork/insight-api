@@ -68,8 +68,8 @@
     "lru-cache": "^4.0.1",
     "mongoose": "^4.11.8",
     "morgan": "^1.7.0",
-    "ravencore-lib": "github:underdarkskies/ravencore-lib",
-    "ravencore-message": "github:underdarkskies/ravencore-message",
+    "ravencore-lib": "github:underdarkskies/ravencore-lib#DEV",
+    "ravencore-message": "github:underdarkskies/ravencore-message#DEV",
     "request": "^2.64.0"
   },
   "deprecated": false,
