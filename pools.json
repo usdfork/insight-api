@@ -31,5 +31,19 @@
     		"YiiMP"
 
     	]
+    },
+    {
+      "poolName": "CoinBlockers",
+      "url": "https://rvn.coinblockers.com",
+      "searchStrings": [
+        "coinblockers.com - https://coinblockers.com"
+        ]
+    },
+    {
+      "poolName": "Krawww-miner",
+      "url": "http://krawww-miner.eu/",
+      "searchStrings": [
+        "krawww-miner"
+        ]
     }
 ]
