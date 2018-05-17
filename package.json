@@ -61,10 +61,12 @@
   ],
   "dependencies": {
     "async": "*",
+    "bignumber.js": "^4.0.2",
     "body-parser": "^1.13.3",
     "compression": "^1.6.1",
     "lodash": "^2.4.1",
     "lru-cache": "^4.0.1",
+    "mongoose": "^4.11.8",
     "morgan": "^1.7.0",
     "ravencore-lib": "github:underdarkskies/ravencore-lib",
     "ravencore-message": "github:underdarkskies/ravencore-message",
