@@ -48,7 +48,23 @@ Or disabled entirely with:
 
 ## API HTTP Endpoints
 
-### Charts: mining-revenue, difficulty, block-interval, block-size 
+### Statistic
+```
+  /insight-api/statistic/transactions
+```
+This would return:
+```
+[
+    {
+      date: "2017-05-30",
+        transaction_count: 1087,
+        block_count: 541
+    },
+    ...
+]
+```
+
+### Charts: mining-revenue, difficulty, block-interval, block-size
 * `GET /chart/difficulty`
 
 ````json
