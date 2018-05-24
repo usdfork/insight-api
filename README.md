@@ -48,9 +48,9 @@ Or disabled entirely with:
 
 ## API HTTP Endpoints
 
-### Statistic / Total / 24h
+### Statistics / Total / 24h
 ```
-  `GET` /insight-api/statistic/total
+  `GET` /insight-api/statistics/total
 ```
 This would return:
 ```
@@ -65,9 +65,9 @@ This would return:
         stake: 0.17279912782774598
     }
 ```
-### Statistic / Transactions
+### Statistics / Transactions
 ```
-  `GET` /insight-api/statistic/transactions?days=14
+  `GET` /insight-api/statistics/transactions?days=14
 ````
 This would return:
 ```
@@ -81,9 +81,9 @@ This would return:
 ]
 ```
 
-### Statistic / Fees
+### Statistics / Fees
 ```
-  `GET` /insight-api/statistic/fees?days=14
+  `GET` /insight-api/statistics/fees?days=14
 ```
 This would return:
 ```
@@ -95,9 +95,9 @@ This would return:
    ...
 ]
 ```
-### Statistic / Outputs
+### Statistics / Outputs
 ```
-  `GET` /insight-api/statistic/outputs?days=14
+  `GET` /insight-api/statistics/outputs?days=14
 ```
 This would return:
 ```
@@ -109,9 +109,9 @@ This would return:
    ...
 ]
 ```
-### Statistic / Difficulty
+### Statistics / Difficulty
 ```
-  `GET` /insight-api/statistic/difficulty?days=14
+  `GET` /insight-api/statistics/difficulty?days=14
 ```
 This would return:
 ```
