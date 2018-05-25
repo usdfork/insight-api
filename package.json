@@ -70,7 +70,7 @@
     "morgan": "^1.7.0",
     "ravencore-lib": "underdarkskies/ravencore-lib#DEV",
     "ravencore-message": "underdarkskies/ravencore-message#DEV",
-    "request": "^2.64.0"
+    "request": "^2.83.0"
   },
   "peerDependencies": {},
   "devDependencies": {
