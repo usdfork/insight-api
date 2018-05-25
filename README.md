@@ -1,5 +1,16 @@
 # Insight API
 
+## Table of Contents
+* [Getting Started](#getting-started)
+
+### Statistics
+* [Total 24h](#total-24h-statistic)
+* [Transactions](#transactions-statistic)
+* [Fees](#fees-statistic)
+* [Outputs](#outputs-statistic)
+* [Difficulty](#difficulty-statistic)
+* [Total Supply](#total-supply-statistic)
+
 A Ravencoin blockchain REST and web socket API service for [Ravencore Node](https://github.com/underdarkskies/ravencore-node).
 
 This is a backend-only service. If you're looking for the web frontend application, take a look at https://github.com/underdarkskies/insight-ui.
@@ -7,7 +18,7 @@ This is a backend-only service. If you're looking for the web frontend applicati
 ## Getting Started
 
 ```bashl
-npm install -g ravencore-node@latest
+npm install -g ravencore-node
 ravencore-node create mynode
 cd mynode
 ravencore-node install insight-api
@@ -43,12 +54,25 @@ Or disabled entirely with:
       "disableRateLimiter": true
     }
   }
-  ```
+```
+
+**Note:** `routePrefix` can be configurable in `ravencore-node.json` with:
+
+``` json
+  "servicesConfig": {
+    "insight-api": {
+      "routePrefix": "insight-api",
+    }
+  }
+```
+
 
 
 ## API HTTP Endpoints
 
-### Statistics / Total / 24h
+## Statistics
+
+### Total 24h Statistic
 ```
   `GET` /insight-api/statistics/total
 ```
@@ -64,10 +88,10 @@ This would return:
         difficulty: 981808167.7687966,
     }
 ```
-### Statistics / Transactions
+### Transactions Statistic
 ```
   `GET` /insight-api/statistics/transactions?days=14
-````
+```
 This would return:
 ```
 [
@@ -80,7 +104,7 @@ This would return:
 ]
 ```
 
-### Statistics / Fees
+### Fees Statistic
 ```
   `GET` /insight-api/statistics/fees?days=14
 ```
@@ -94,7 +118,7 @@ This would return:
    ...
 ]
 ```
-### Statistics / Outputs
+### Outputs Statistic
 ```
   `GET` /insight-api/statistics/outputs?days=14
 ```
@@ -108,7 +132,7 @@ This would return:
    ...
 ]
 ```
-### Statistics / Difficulty
+### Difficulty Statistic
 ```
   `GET` /insight-api/statistics/difficulty?days=14
 ```
@@ -121,6 +145,26 @@ This would return:
     },
     ...
 ]
+```
+
+### Total Supply Statistic
+
+```
+  `GET` /insight-api/supply
+```
+or
+```
+  `GET` /insight-api/supply?format=object
+```
+This would return:
+```
+100091264
+```
+or
+```
+{
+    "supply": "100091264"
+}
 ```
 
 ### Charts: mining-revenue, difficulty, block-interval, block-size
