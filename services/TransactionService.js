@@ -28,8 +28,8 @@ TransactionService.prototype.getDetailedTransaction = function (txid, callback) 
             return callback(err);
         });
 
-    }], function (err, tx) {
-        return callback(err, tx);
+    }], function (err, transaction) {
+        return callback(err, transaction);
     });
 
 };
