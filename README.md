@@ -393,9 +393,14 @@ Where "xxx" can be:
 
 ### Utility Methods
 ```
-  /insight-api/utils/estimatefee[?nbBlocks=2]
+  /insight-api/utils/estimatesmartfee[?nbBlocks=6&mode=economical]
 ```
-
+Sample output:
+````
+{
+  "6":0.00001047
+}
+````
 
 ## Web Socket API
 The web socket API is served using [socket.io](http://socket.io).
