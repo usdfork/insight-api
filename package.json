@@ -1,30 +1,8 @@
 {
-  "_from": "github:underdarkskies/insight-api",
-  "_id": "insight-api@0.4.3",
-  "_inBundle": false,
-  "_integrity": "",
-  "_location": "/ravencore/insight-api",
-  "_phantomChildren": {},
-  "_requested": {
-    "type": "git",
-    "raw": "insight-api@github:underdarkskies/insight-api",
-    "name": "insight-api",
-    "escapedName": "insight-api",
-    "rawSpec": "github:underdarkskies/insight-api",
-    "saveSpec": "github:underdarkskies/insight-api",
-    "fetchSpec": null,
-    "gitCommittish": null
-  },
-  "_requiredBy": [
-    "/ravencore"
-  ],
-  "_resolved": "github:underdarkskies/insight-api#28cbe638bf7d28abaf9cd725f1819246a862e461",
-  "_spec": "insight-api@github:underdarkskies/insight-api",
-  "_where": "/home/ubuntu/ravencore",
-  "bugs": {
-    "url": "https://github.com/underdarkskies/insight-api/issues"
-  },
-  "bundleDependencies": false,
+  "name": "insight-api",
+  "description": "A Ravencoin blockchain REST and web socket API service for Ravencore Node.",
+  "version": "0.4.3",
+  "repository": "git://github.com/underdarkskies/insight-api.git",
   "contributors": [
     {
       "name": "Gustavo Cortez",
@@ -59,32 +37,11 @@
       "email": "braydon@bitpay.com"
     }
   ],
-  "dependencies": {
-    "async": "*",
-    "bignumber.js": "^4.0.2",
-    "body-parser": "^1.13.3",
-    "compression": "^1.6.1",
-    "lodash": "^2.4.1",
-    "lru-cache": "^4.0.1",
-    "mongoose": "^4.11.8",
-    "morgan": "^1.7.0",
-    "ravencore-lib": "github:underdarkskies/ravencore-lib#DEV",
-    "ravencore-message": "github:underdarkskies/ravencore-message#DEV",
-    "request": "^2.64.0"
-  },
-  "deprecated": false,
-  "description": "A Ravencoin blockchain REST and web socket API service for Ravencore Node.",
-  "devDependencies": {
-    "chai": "^3.5.0",
-    "mocha": "^2.4.5",
-    "proxyquire": "^1.7.2",
-    "should": "^8.3.1",
-    "sinon": "^1.10.3"
-  },
-  "engines": {
-    "node": ">=0.12.0"
+  "bugs": {
+    "url": "https://github.com/underdarkskies/insight-api/issues"
   },
   "homepage": "https://github.com/underdarkskies/insight-api",
+  "license": "MIT",
   "keywords": [
     "insight",
     "insight api",
@@ -94,17 +51,33 @@
     "json",
     "ravencore"
   ],
-  "license": "MIT",
-  "main": "lib",
-  "name": "insight-api",
-  "peerDependencies": {},
-  "ravencoreNode": "lib",
-  "repository": {
-    "type": "git",
-    "url": "git://github.com/underdarkskies/insight-api.git"
+  "engines": {
+    "node": ">=0.12.0"
   },
   "scripts": {
     "test": "NODE_ENV=test mocha -R spec --recursive"
   },
-  "version": "0.4.3"
+  "main": "lib",
+  "ravencoreNode": "lib",
+  "dependencies": {
+    "async": "*",
+    "bignumber.js": "^4.0.2",
+    "body-parser": "^1.13.3",
+    "compression": "^1.6.1",
+    "lodash": "^2.4.1",
+    "lru-cache": "^4.0.1",
+    "mongoose": "^4.11.8",
+    "morgan": "^1.7.0",
+    "ravencore-lib": "underdarkskies/ravencore-lib#DEV",
+    "ravencore-message": "underdarkskies/ravencore-message#DEV",
+    "request": "^2.64.0"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "mocha": "^2.4.5",
+    "proxyquire": "^1.7.2",
+    "should": "^8.3.1",
+    "sinon": "^1.10.3"
+  }
 }
