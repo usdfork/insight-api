@@ -62,7 +62,6 @@ This would return:
         number_of_transactions: 2547,
         outputs_volume: 46920965480,
         difficulty: 981808167.7687966,
-        stake: 0.17279912782774598
     }
 ```
 ### Statistics / Transactions
