@@ -411,7 +411,7 @@ StatisticService.prototype.processBlock = function (blockHeight, next) {
 
 /**
  *
- * @param {String} date 01-01-2018
+ * @param {String} date e.g. 01-01-2018
  * @param {Object} data
  * @param next
  * @return {*}
