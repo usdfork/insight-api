@@ -219,15 +219,7 @@ AddressBlocksMinedService.prototype.processBlock = function (blockHeight, next) 
 
         var txHash;
 
-        switch (block.flags) {
-            case ravencore.Block.PROOF_OF_STAKE:
-                txHash = block.tx[1];
-                break;
-
-            case ravencore.Block.PROOF_OF_WORK:
-                txHash = block.tx[0];
-                break;
-        }
+        txHash = block.tx[0];
 
         return self.node.getDetailedTransaction(txHash, function (err, trx) {
 
@@ -244,15 +236,16 @@ AddressBlocksMinedService.prototype.processBlock = function (blockHeight, next) 
     }, function (callback) {
 
         var minedBy;
+        var abmspoolAddress;
+        var abmsreward = self.getBlockReward(block.height);
 
-        switch (block.flags) {
-            case ravencore.Block.PROOF_OF_STAKE:
-                minedBy = transaction.inputs[0].address;
-                break;
-            case ravencore.Block.PROOF_OF_WORK:
-                minedBy = transaction.outputs[0].address;
-                break;
-        }
+        transaction.outputs.forEach(function (output) {
+            if (output.satoshis > (abmsreward * 0.8)) {
+                abmspoolAddress = output.address;
+            }
+        });
+
+        minedBy = abmspoolAddress
 
         if (!minedBy) {
             return callback();
@@ -274,6 +267,20 @@ AddressBlocksMinedService.prototype.processBlock = function (blockHeight, next) 
 
     });
 
+};
+
+AddressBlocksMinedService.prototype.getBlockReward = function(height) {
+  var halvings = Math.floor(height / 2100000);
+  // Force block reward to zero when right shift is undefined.
+  if (halvings >= 64) {
+    return 0;
+  }
+
+  // Subsidy is cut in half every 2,100,000 blocks which will occur approximately every 4 years.
+  var subsidy = new BN(5000 * 1e8);
+  subsidy = subsidy.shrn(halvings);
+
+  return parseInt(subsidy.toString(10));
 };
 
 module.exports = AddressBlocksMinedService;
