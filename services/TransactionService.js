@@ -17,18 +17,18 @@ function TransactionService(opts) {
  * @param {Function} callback
  * @return {*}
  */
-TransactionService.prototype.getDetailedTransaction = function (txid, callback) {
+TransactionService.prototype.getDetailedTransaction = function(txid, callback) {
 
     var self = this;
     var tx = null;
-    return async.waterfall([function (callback) {
+    return async.waterfall([function(callback) {
 
         return self.node.getDetailedTransaction(txid, function(err, transaction) {
             tx = transaction;
             return callback(err);
         });
 
-    }], function (err, transaction) {
+    }], function(err, transaction) {
         return callback(err, transaction);
     });
 
