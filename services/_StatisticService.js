@@ -7,20 +7,21 @@ var LRU = require('lru-cache');
 var Common = require('../lib/common');
 var util = require('util');
 var EventEmitter = require('events').EventEmitter;
+var STATISTIC_TYPE = 'STATISTIC';
+var SupplyHelper = require('../helpers/SupplyHelper');
 
-//TODO:: mv to service
-
+/**
+ *
+ * @param {Object} options
+ * @constructor
+ */
 function StatisticService(options) {
 
     this.node = options.node;
     this.statisticDayRepository = options.statisticDayRepository;
 
     this.addressBalanceService = options.addressBalanceService;
-
-
-    /**
-     * Statistic/Total
-     */
+    this.lastBlockRepository = options.lastBlockRepository;
 
     /**
      * 24h Cache
@@ -38,7 +39,6 @@ function StatisticService(options) {
     this.knownBlocks = LRU(999999999);
 
     this.lastCheckedBlock = 0;
-    this.totalSubsidityAmount = new BigNumber(0);
 
     /**
      *
@@ -50,17 +50,185 @@ function StatisticService(options) {
     this.lastTipInProcess = false;
     this.lastTipTimeout = false;
 
-    this.node.services.ravend.on('tip', this._rapidProtectedUpdateTip.bind(this));
-    this._rapidProtectedUpdateTip(this.node.services.ravend.height);
-
 }
 
 util.inherits(StatisticService, EventEmitter);
 
-StatisticService.DEFAULT_STATISTICS_COUNT_DAYS = 365; //1 year
-StatisticService.DEFAULT_STATISTICS_MAX_COUNT_DAYS = 365 * 2; //2 year
+/**
+ *
+ * @param {Function} callback
+ * @return {*}
+ */
+StatisticService.prototype.start = function (callback) {
 
+    var self = this,
+        height = self.node.services.ravend.height;
 
+    return async.waterfall([function (callback) {
+        return self.lastBlockRepository.setLastBlockType(STATISTIC_TYPE, 0, function(err) {
+
+            if (err) {
+
+                self.common.log.error('[STATISTICS Service] setLastBlockType Error', err);
+
+                return callback(err)
+            }
+
+            self.common.log.info('[STATISTICS Service] LastBlockType set');
+
+            return callback();
+
+        });
+    }, function (callback) {
+        return self.lastBlockRepository.getLastBlockByType(STATISTIC_TYPE, function(err, existingType) {
+
+            if (err) {
+
+                self.common.log.error('[STATISTICS Service] getLastBlockByType Error', err);
+
+                return callback(err)
+            }
+
+            self.lastCheckedBlock = existingType.last_block_number;
+
+            self.common.log.info('[STATISTICS Service] getLastBlockByType set', self.lastCheckedBlock);
+
+            return callback();
+
+        });
+    }, function (callback) {
+
+        self.common.log.info('[STATISTICS Service] start upd prev blocks');
+
+        return self.processPrevBlocks(height, function (err) {
+
+            if (err) {
+                return callback(err);
+            }
+
+            self.common.log.info('[STATISTICS Service] updated prev blocks');
+
+            return callback(err);
+
+        });
+
+    }], function (err) {
+
+        if (err) {
+            return callback(err);
+        }
+
+        self.node.services.ravend.on('tip', self._rapidProtectedUpdateTip.bind(self));
+        self._rapidProtectedUpdateTip(height);
+
+        return callback(err);
+    });
+
+};
+
+/**
+ *
+ * @param {Object} data
+ * @param {Function} next
+ * @return {*}
+ */
+StatisticService.prototype.process24hBlock = function (data, next) {
+
+    var self = this,
+        block = data.blockJson,
+        subsidy = data.subsidy,
+        fee = data.fee,
+        totalOutputs = data.totalOutputs,
+        currentDate = new Date();
+
+    currentDate.setDate(currentDate.getDate() - 1);
+
+    var minTimestamp = currentDate.getTime() / 1000,
+        maxAge = (block.time - minTimestamp) * 1000;
+
+    if (maxAge > 0) {
+        self.blocksByHeight.set(block.height, block, maxAge);
+        self.subsidyByBlockHeight.set(block.height, subsidy, maxAge);
+        self.feeByHeight.set(block.height, fee, maxAge);
+        self.outputsByHeight.set(block.height, totalOutputs, maxAge);
+    }
+
+    return next();
+
+};
+
+/**
+ *
+ * @param {Number} height
+ * @param {Function} next
+ * @return {*}
+ */
+StatisticService.prototype.processPrevBlocks = function (height, next) {
+
+    var self = this,
+        dataFlow = {
+            blockJson: null
+        };
+
+    return async.doDuring(
+        function(callback) {
+
+            return self.node.getJsonBlock(height, function (err, blockJson) {
+
+                if (err) {
+                    return callback(err);
+                }
+
+                dataFlow.blockJson = blockJson;
+
+                return callback();
+            });
+
+        },
+        function(callback) {
+
+            var block = dataFlow.blockJson,
+                currentDate = new Date();
+
+            currentDate.setDate(currentDate.getDate() - 1);
+
+            var minTimestamp = currentDate.getTime() / 1000,
+                maxAge = (block.time - minTimestamp) * 1000;
+
+            height--;
+
+            if (maxAge > 0) {
+                return async.waterfall([function (callback) {
+                    return self._getBlockInfo(block.height, function (err, data) {
+                        return callback(err, data);
+                    });
+                }, function (data, callback) {
+                    return self.process24hBlock(data, function (err) {
+                        return callback(err);
+                    });
+                }], function (err) {
+                    return callback(err, true);
+                });
+
+            } else {
+                return callback(null, false);
+            }
+
+        },
+        function (err) {
+            return next(err);
+        }
+    );
+
+};
+
+/**
+ *
+ * @param {Number} height
+ * @param {Function} next
+ * @return {*}
+ * @private
+ */
 StatisticService.prototype._getLastBlocks = function(height, next) {
 
 	var self = this,
@@ -70,15 +238,34 @@ StatisticService.prototype._getLastBlocks = function(height, next) {
             blocks.push(i);
         }
 
-
 	     return async.eachSeries(blocks, function (blockHeight, callback) {
 
-		            var dataFlow = {
+        return self.processBlock(blockHeight, function (err) {
+            return callback(err);
+        });
+
+    }, function (err) {
+        return next(err);
+    });
+
+};
+
+/**
+ *
+ * @param {Number} blockHeight
+ * @param {Function} next
+ * @return {*}
+ * @private
+ */
+StatisticService.prototype._getBlockInfo = function (blockHeight, next) {
+
+    var self = this,
+        dataFlow = {
             subsidy: null,
             block: null,
             blockJson: null,
-			                 fee: 0,
-			                 totalOutputs: 0
+			      fee: 0,
+			      totalOutputs: 0
 		};
 
 		return async.waterfall([function (callback) {
@@ -165,8 +352,30 @@ StatisticService.prototype._getLastBlocks = function(height, next) {
 		}], function (err) {
 
 			if (err) {
-				return callback(err);
+            return next(err);
 			}
+
+        return next(err, dataFlow);
+
+    });
+
+};
+
+/**
+ *
+ * @param {Number} blockHeight
+ * @param {Function} next
+ * @return {*}
+ */
+StatisticService.prototype.processBlock = function (blockHeight, next) {
+
+    var self = this;
+
+    return self._getBlockInfo(blockHeight, function (err, data) {
+
+        if (err) {
+            return next(err);
+        }
 
             if (self.knownBlocks.get(blockHeight)) {
                 return callback();
@@ -176,42 +385,45 @@ StatisticService.prototype._getLastBlocks = function(height, next) {
 
             self.lastCheckedBlock = blockHeight;
 
-			      var block = dataFlow.blockJson,
-                subsidy = dataFlow.subsidy,
-                fee = dataFlow.fee,
-                totalOutputs = dataFlow.totalOutputs,
-                currentDate = new Date();
-
-            var date = new Date(block.time * 1000),
+        var block = data.blockJson,
+            date = new Date(block.time * 1000),
                 formattedDate = self.formatTimestamp(date);
 
-            self.updateOrCreateDay(formattedDate, dataFlow, function () {
-
+        return async.waterfall([function (callback) {
+            return self.lastBlockRepository.updateOrAddLastBlock(block.height, STATISTIC_TYPE, function (err) {
+                return callback(err);
 		        });
-
-
+        }, function (callback) {
+            return self.updateOrCreateDay(formattedDate, data, function (err) {
+                return callback(err);
 	     });
+        }, function (callback) {
+            return self.process24hBlock(data, function (err) {
+                return callback(err);
+            });
+        }], function (err) {
+            return next(err);
+        });
 
     });
-
 
 };
 
 /**
  *
+ * @param {String} date 01-01-2018
+ * @param {Object} data
+ * @param next
+ * @return {*}
  */
 StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
 
-    var self = this;
-
-    var block = data.blockJson,
+    var self = this,
+        block = data.blockJson,
         subsidy = data.subsidy,
         fee = data.fee,
         totalOutputs = data.totalOutputs,
-        currentDate = new Date();
-
-
-    var dataFlow = {
+        dataFlow = {
         day: null,
         formattedDay: null
     };
@@ -224,6 +436,7 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
             }
 
             if (!day) {
+
                 dataFlow.day = {
                     totalTransactionFees: {
                         sum: '0',
@@ -243,28 +456,79 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
                         count: '0'
                     },
                     supply: {
-                        sum: (new BigNumber(0)).plus((block.height) * 5000).toString(10)
-                    }
+                        sum: '0'
+                    },
+                    date: date
                 };
+
             } else {
                 dataFlow.day = day;
             }
+
             return callback();
+
         });
+
     }, function (callback) {
 
-        console.log(dataFlow.day);
+        var dayBN = self._toDayBN(dataFlow.day);
 
-        return self.statisticDayRepository.createOrUpdateDay(new Date(date), dataFlow.day, function (err, day) {
+        dayBN.totalTransactionFees.sum = dayBN.totalTransactionFees.sum.plus(fee.toString());
+        dayBN.totalTransactionFees.count = dayBN.totalTransactionFees.count.plus(1);
 
+        dayBN.totalBlocks.count = dayBN.totalBlocks.count.plus(1);
+
+        dayBN.numberOfTransactions.count = dayBN.numberOfTransactions.count.plus(block.tx.length);
+
+        dayBN.totalOutputVolume.sum = dayBN.totalOutputVolume.sum.plus(totalOutputs.toString());
+
+
+       dayBN.difficulty.sum = dayBN.difficulty.sum.plus(block.difficulty.toString());
+       dayBN.difficulty.count = dayBN.difficulty.count.plus(1);
+
+       dayBN.supply.sum = SupplyHelper.getTotalSupplyByHeight(block.height).mul(1e8);
+
+
+        return self.statisticDayRepository.createOrUpdateDay(new Date(date), dayBN, function (err) {
+            return callback(err);
         });
-
-
-        return callback();
 
     }], function (err) {
         return next(err);
     });
+
+};
+
+/**
+ *
+ * @param {Object} day
+ * @return {{totalTransactionFees: {sum, count}, numberOfTransactions: {count}, totalOutputVolume: {sum}, totalBlocks: {count}, difficulty: {sum, count}, stake: {sum}, supply: {sum}, date}}
+ * @private
+ */
+StatisticService.prototype._toDayBN = function (day) {
+    return {
+        totalTransactionFees: {
+            sum: new BigNumber(day.totalTransactionFees.sum),
+            count: new BigNumber(day.totalTransactionFees.count)
+        },
+        numberOfTransactions: {
+            count: new BigNumber(day.numberOfTransactions.count)
+        },
+        totalOutputVolume: {
+            sum: new BigNumber(day.totalOutputVolume.sum)
+        },
+        totalBlocks: {
+            count: new BigNumber(day.totalBlocks.count)
+        },
+        difficulty: {
+            sum: new BigNumber(day.difficulty.sum),
+            count: new BigNumber(day.difficulty.count)
+        },
+        supply: {
+            sum: new BigNumber(day.supply.sum)
+        },
+        date: day.date
+    };
 };
 
 /**
@@ -294,7 +558,7 @@ StatisticService.prototype._rapidProtectedUpdateTip = function(height) {
         this.lastTipHeight = height;
     }
 
-    if (this.lastTipInProcess) {
+    if (this.lastTipInProcess || height < this.lastCheckedBlock) {
         return false;
     }
 
@@ -310,7 +574,7 @@ StatisticService.prototype._rapidProtectedUpdateTip = function(height) {
             return false;
         }
 
-        self.emit('updated');
+        self.emit('updated', {height: height});
 
         self.common.log.info('[STATISTICS Service] updated to ', height);
 
@@ -319,6 +583,273 @@ StatisticService.prototype._rapidProtectedUpdateTip = function(height) {
         }
 
     });
+
+};
+
+/**
+ *
+ * @param {Number} days
+ * @param {Function} next
+ * @return {*}
+ */
+StatisticService.prototype.getStats = function (days, next) {
+
+    var self = this,
+        currentDate = new Date(),
+        formattedDate = this.formatTimestamp(currentDate),
+        from = new Date(formattedDate);
+
+    from.setDate(from.getDate() - days);
+
+    return self.statisticDayRepository.getStats(from, new Date(formattedDate), function (err, stats) {
+        return next(err, stats);
+    });
+
+};
+
+/**
+ *
+ * @param {Number} days
+ * @param {Function} next
+ */
+StatisticService.prototype.getDifficulty = function (days, next) {
+
+    var self = this;
+
+    return self.getStats(days, function (err, stats) {
+
+        if (err) {
+            return next(err);
+        }
+
+        var results = [];
+
+        stats.forEach(function (day) {
+
+            results.push({
+                date: self.formatTimestamp(day.date),
+                sum: day.difficulty.sum > 0 && day.difficulty.count > 0 ? new BigNumber(day.difficulty.sum).dividedBy(day.difficulty.count).toNumber() : 0
+            });
+
+        });
+
+        return next(err, results);
+
+    });
+
+};
+
+/**
+ *
+ * @param {Number} days
+ * @param {Function} next
+ */
+StatisticService.prototype.getSupply = function (days, next) {
+
+    var self = this;
+
+    return self.getStats(days, function (err, stats) {
+
+        if (err) {
+            return next(err);
+        }
+
+        var results = [];
+
+        stats.forEach(function (day) {
+
+            var sumBN = new BigNumber(day.supply.sum);
+
+            results.push({
+                date: self.formatTimestamp(day.date),
+                sum: sumBN.gt(0) ? sumBN.dividedBy(1e8).toString(10) : '0'
+            });
+
+        });
+
+        return next(err, results);
+
+    });
+
+};
+
+/**
+ *
+ * @param {Number} days
+ * @param {Function} next
+ */
+StatisticService.prototype.getOutputs = function (days, next) {
+
+    var self = this;
+
+    return self.getStats(days, function (err, stats) {
+
+        if (err) {
+            return next(err);
+        }
+
+        var results = [];
+
+        stats.forEach(function (day) {
+
+            results.push({
+                date: self.formatTimestamp(day.date),
+                sum: day.totalOutputVolume && day.totalOutputVolume.sum > 0 ? day.totalOutputVolume.sum : 0
+            });
+
+        });
+
+        return next(err, results);
+
+    });
+
+};
+
+/**
+ *
+ * @param {Number} days
+ * @param {Function} next
+ */
+StatisticService.prototype.getTransactions = function (days, next) {
+
+    var self = this;
+
+    return self.getStats(days, function (err, stats) {
+
+        if (err) {
+            return next(err);
+        }
+
+        var results = [];
+
+        stats.forEach(function (day) {
+
+            results.push({
+                date: self.formatTimestamp(day.date),
+                transaction_count: parseInt(day.numberOfTransactions.count),
+                block_count: parseInt(day.totalBlocks.count)
+            });
+
+        });
+
+        return next(err, results);
+
+    });
+
+};
+
+/**
+ *
+ * @param {Number} days
+ * @param {Function} next
+ */
+StatisticService.prototype.getFees = function (days, next) {
+
+    var self = this;
+
+    return self.getStats(days, function (err, stats) {
+
+        if (err) {
+            return next(err);
+        }
+
+        var results = [];
+
+        stats.forEach(function (day) {
+
+            var avg = day.totalTransactionFees.sum > 0 && day.totalTransactionFees.count > 0 ? new BigNumber(day.totalTransactionFees.sum).dividedBy(day.totalTransactionFees.count).toNumber() : 0;
+
+            results.push({
+                date: self.formatTimestamp(day.date),
+                fee: avg
+            });
+
+        });
+
+        return next(err, results);
+
+    });
+
+};
+
+/**
+ *
+ * @param {Function} nextCb
+ * @return {*}
+ */
+StatisticService.prototype.getTotal = function(nextCb) {
+
+    var self = this,
+        initHeight = self.lastCheckedBlock,
+        height = initHeight,
+        next = true,
+        sumBetweenTime = 0,
+        countBetweenTime = 0,
+        numTransactions = 0,
+        minedBlocks = 0,
+        minedCurrencyAmount = 0,
+        allFee = 0,
+        sumDifficulty = 0,
+        countDifficulty = 0,
+        totalOutputsAmount = 0;
+
+    while(next && height > 0) {
+
+        var currentElement = self.blocksByHeight.get(height),
+            subsidy = self.subsidyByBlockHeight.get(height),
+            outputAmount = self.outputsByHeight.get(height);
+
+        if (currentElement) {
+
+            var nextElement = self.blocksByHeight.get(height + 1),
+                fee = self.feeByHeight.get(height);
+
+            if (nextElement) {
+                sumBetweenTime += (nextElement.time - currentElement.time);
+                countBetweenTime++;
+            }
+
+            numTransactions += currentElement.tx.length;
+            minedBlocks++;
+
+            var difficulty = currentElement.difficulty;
+
+            if (difficulty) {
+                sumDifficulty += difficulty;
+                countDifficulty++;
+            }
+
+            if (subsidy) {
+                minedCurrencyAmount += subsidy;
+            }
+
+            if (fee) {
+                allFee += fee;
+            }
+
+            if (outputAmount) {
+                totalOutputsAmount += outputAmount;
+            }
+
+        } else {
+            next = false;
+        }
+
+        height--;
+
+    }
+
+    var result = {
+            n_blocks_mined: minedBlocks,
+            time_between_blocks: sumBetweenTime && countBetweenTime ? sumBetweenTime / countBetweenTime : 0,
+            mined_currency_amount: minedCurrencyAmount,
+            transaction_fees: allFee,
+            number_of_transactions: numTransactions,
+            outputs_volume: totalOutputsAmount,
+            difficulty: sumDifficulty && countDifficulty ? sumDifficulty / countDifficulty : 0,
+        };
+
+    return nextCb(null, result);
 
 };
 
@@ -335,7 +866,5 @@ StatisticsService.prototype.getBlockReward = function(height) {
 
   return parseInt(subsidy.toString(10));
 };
-
-
 
 module.exports = StatisticService;
