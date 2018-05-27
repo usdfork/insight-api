@@ -866,5 +866,16 @@ StatisticsService.prototype.getBlockReward = function(height) {
 
   return parseInt(subsidy.toString(10));
 };
+/**
+ *
+ * @return {BigNumber} supply - BigNumber representation of total supply
+ */
+StatisticService.prototype.getTotalSupply  = function() {
+    var blockHeight = this.node.services.ravend.height;
+
+    var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
+
+    return supply;
+}
 
 module.exports = StatisticService;
