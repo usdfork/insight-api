@@ -853,7 +853,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
 
 };
 
-StatisticsService.prototype.getBlockReward = function(height) {
+StatisticService.prototype.getBlockReward = function(height) {
   var halvings = Math.floor(height / 2100000);
   // Force block reward to zero when right shift is undefined.
   if (halvings >= 64) {
