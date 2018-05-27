@@ -9,6 +9,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var STATISTIC_TYPE = 'STATISTIC';
 var SupplyHelper = require('../helpers/SupplyHelper');
+var BN = ravencore.crypto.BN;
 
 /**
  *
