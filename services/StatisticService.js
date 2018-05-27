@@ -19,7 +19,6 @@ function StatisticService(options) {
 
     this.node = options.node;
     this.statisticDayRepository = options.statisticDayRepository;
-    this.totalStatisticRepository = options.totalStatisticRepository;
 
     this.addressBalanceService = options.addressBalanceService;
     this.lastBlockRepository = options.lastBlockRepository;
@@ -217,7 +216,6 @@ StatisticService.prototype.processPrevBlocks = function (height, next) {
 
         },
         function (err) {
-
             return next(err);
         }
     );
@@ -233,14 +231,14 @@ StatisticService.prototype.processPrevBlocks = function (height, next) {
  */
 StatisticService.prototype._getLastBlocks = function(height, next) {
 
-    var self = this,
-        blocks = [];
+	var self = this,
+    	blocks = [];
 
     for (var i = self.lastCheckedBlock + 1; i <= height; i++) {
-        blocks.push(i);
-    }
+            blocks.push(i);
+        }
 
-    return async.eachSeries(blocks, function (blockHeight, callback) {
+	     return async.eachSeries(blocks, function (blockHeight, callback) {
 
         return self.processBlock(blockHeight, function (err) {
             return callback(err);
@@ -266,126 +264,96 @@ StatisticService.prototype._getBlockInfo = function (blockHeight, next) {
             subsidy: null,
             block: null,
             blockJson: null,
-            fee: 0,
-            totalOutputs: 0
-        };
+			      fee: 0,
+			      totalOutputs: 0
+		};
 
-    return async.waterfall([function (callback) {
+		return async.waterfall([function (callback) {
         return self.node.getJsonBlock(blockHeight, function (err, blockJson) {
-            if((err && err.code === -5) || (err && err.code === -8)) {
-                return callback(err);
-            } else if(err) {
-                return callback(err);
-            }
+                if((err && err.code === -5) || (err && err.code === -8)) {
+                    return callback(err);
+                } else if(err) {
+                    return callback(err);
+                }
 
-            dataFlow.blockJson = blockJson;
+                dataFlow.blockJson = blockJson;
 
-            return callback();
-        });
-    }, function (callback) {
-
-        /**
-         * Block
-         */
-        return self.node.getBlock(blockHeight, function(err, block) {
-
-            if((err && err.code === -5) || (err && err.code === -8)) {
-                return callback(err);
-            } else if(err) {
-                return callback(err);
-            }
-
-            dataFlow.block = block;
-
-            return callback();
-
-        });
-    }, function (callback) {
-
-        /**
-         * Subsidy
-         */
-        return self.node.getSubsidy(blockHeight, function(err, result) {
-            dataFlow.subsidy = result;
-            return callback();
-        });
-
-    }, function (callback) {
-
-        /**
-         * Fee
-         */
-
-        if (dataFlow.blockJson.flags === ravencore.Block.PROOF_OF_STAKE) { // IsProofOfStake
-
-            var transaction1 = dataFlow.block.transactions[1],
-                output1 = transaction1.outputs[1],
-                output2 = transaction1.outputs[2],
-                input0 = transaction1.inputs[0],
-                prevTxId = input0.prevTxId,
-                outputIndex = input0.outputIndex,
-                currentVoutsAmount = output1.satoshis;
-
-            if (output2 && !output2.script.isPublicKeyHashOut()) {
-                currentVoutsAmount += output2.satoshis;
-            }
-
-            if (prevTxId) {
-                return self.node.getTransaction(prevTxId.toString('hex'), function (err, transaction) {
-                    if (err) {
-                        return callback(err);
-                    }
-
-                    dataFlow.fee = currentVoutsAmount - transaction.outputs[outputIndex].satoshis;
-
-                    return callback();
-
-                });
-            } else {
                 return callback();
-            }
+          });
+        }, function (callback) {
 
-        } else {//IsProofOfWork
-            var transaction0 = dataFlow.block.transactions[0],
-                output0 = transaction0.outputs[0];
+            /**
+			         * Block
+             */
+            return self.node.getBlock(blockHeight, function(err, block) {
 
-            if (output0 && (output0.satoshis - dataFlow.subsidy) > 0) {
-                dataFlow.fee = output0.satoshis - dataFlow.subsidy;
-            }
+                if((err && err.code === -5) || (err && err.code === -8)) {
+                    return callback(err);
+                } else if(err) {
+                    return callback(err);
+                }
 
-        }
+                dataFlow.block = block;
 
-        return callback();
+                return callback();
 
-    }, function (callback) {
+           });
+		}, function (callback) {
 
-        /**
-         * Total outputs
-         */
+            /**
+			 * Subsidy
+             */
+             return self.getBlockReward(blockHeight, function (err, result) {
+                 dataFlow.subsidy = result;
+                 return callback();
+			});
 
-        var trxsExcept = [];
+		}, function (callback) {
 
-        if (dataFlow.blockJson.flags === ravencore.Block.PROOF_OF_STAKE) { // IsProofOfStake
-            trxsExcept.push(0, 1);
-        } else { //IsProofOfWork
+            /**
+			       * Fee
+             */
+
+
+
+             var transaction0 = dataFlow.block.transactions[0],
+                 currentVoutsAmount = 0;
+
+                 transaction0.outputs.forEach(function (output) {
+                       currentVoutsAmount += output.satoshis;
+                 });
+
+                 if ((currentVoutsAmount - dataFlow.subsidy) > 0) {
+                 dataFlow.fee = currentVoutsAmount - dataFlow.subsidy;
+                 }
+
+		       return callback();
+
+		}, function (callback) {
+
+            /**
+			 * Total outputs
+             */
+
+			var trxsExcept = [];
+
             trxsExcept.push(0);
-        }
 
-        dataFlow.block.transactions.forEach(function (transaction, idx) {
-            if (trxsExcept.indexOf(idx) === -1) {
-                transaction.outputs.forEach(function (output) {
-                    dataFlow.totalOutputs += output.satoshis;
-                });
-            }
-        });
+            dataFlow.block.transactions.forEach(function (transaction, idx) {
+                if (trxsExcept.indexOf(idx) === -1) {
+                    transaction.outputs.forEach(function (output) {
+						dataFlow.totalOutputs += output.satoshis;
+                    });
+				        }
+			      });
 
-        return callback();
+            return callback();
 
-    }], function (err) {
+		}], function (err) {
 
-        if (err) {
+			if (err) {
             return next(err);
-        }
+			}
 
         return next(err, dataFlow);
 
@@ -409,60 +377,26 @@ StatisticService.prototype.processBlock = function (blockHeight, next) {
             return next(err);
         }
 
-        if (self.knownBlocks.get(blockHeight)) {
-            return callback();
-        }
+            if (self.knownBlocks.get(blockHeight)) {
+                return callback();
+            }
 
-        self.knownBlocks.set(blockHeight, true);
+            self.knownBlocks.set(blockHeight, true);
 
-        self.lastCheckedBlock = blockHeight;
+            self.lastCheckedBlock = blockHeight;
 
         var block = data.blockJson,
             date = new Date(block.time * 1000),
-            formattedDate = self.formatTimestamp(date);
+                formattedDate = self.formatTimestamp(date);
 
         return async.waterfall([function (callback) {
             return self.lastBlockRepository.updateOrAddLastBlock(block.height, STATISTIC_TYPE, function (err) {
                 return callback(err);
-            });
+		        });
         }, function (callback) {
             return self.updateOrCreateDay(formattedDate, data, function (err) {
                 return callback(err);
-            });
-        }, function (callback) {
-
-            if (data.subsidy && block.flags === ravencore.Block.PROOF_OF_STAKE) {
-
-                var dataFlow = {
-                    posTotalAmount: 0
-                };
-
-                return async.waterfall([function (callback) {
-
-                    return self.totalStatisticRepository.getPOSTotalAmount(function (err, value) {
-                        if (err) {
-                            return callback(err);
-                        }
-
-                        dataFlow.posTotalAmount = value;
-
-                        return callback();
-                    });
-
-                }, function (callback) {
-
-                    return self.totalStatisticRepository.createOrUpdatePosTotalAmount(new BigNumber(dataFlow.posTotalAmount).plus(data.subsidy).toString(10), function (err) {
-                        return callback(err);
-                    });
-
-                }], function (err) {
-                    return callback(err);
-                });
-
-            }
-
-            return callback();
-
+	     });
         }, function (callback) {
             return self.process24hBlock(data, function (err) {
                 return callback(err);
@@ -490,9 +424,9 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
         fee = data.fee,
         totalOutputs = data.totalOutputs,
         dataFlow = {
-            day: null,
-            formattedDay: null
-        };
+        day: null,
+        formattedDay: null
+    };
 
     return async.waterfall([function (callback) {
         return self.statisticDayRepository.getDay(new Date(date), function (err, day) {
@@ -521,9 +455,6 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
                         sum: '0',
                         count: '0'
                     },
-                    stake: {
-                        sum: '0'
-                    },
                     supply: {
                         sum: '0'
                     },
@@ -551,20 +482,12 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
 
         dayBN.totalOutputVolume.sum = dayBN.totalOutputVolume.sum.plus(totalOutputs.toString());
 
-        if (block.difficulty && block.flags === ravencore.Block.PROOF_OF_STAKE) {
-            dayBN.difficulty.sum = dayBN.difficulty.sum.plus(block.difficulty.toString());
-            dayBN.difficulty.count = dayBN.difficulty.count.plus(1);
-        }
 
-        if (subsidy) {
+       dayBN.difficulty.sum = dayBN.difficulty.sum.plus(block.difficulty.toString());
+       dayBN.difficulty.count = dayBN.difficulty.count.plus(1);
 
-            if (block.flags === ravencore.Block.PROOF_OF_STAKE) {
-                dayBN.stake.sum = dayBN.stake.sum.plus(subsidy);
-            }
+       dayBN.supply.sum = SupplyHelper.getTotalSupplyByHeight(block.height).mul(1e8);
 
-            dayBN.supply.sum = SupplyHelper.getTotalSupplyByHeight(block.height).mul(1e8);
-
-        }
 
         return self.statisticDayRepository.createOrUpdateDay(new Date(date), dayBN, function (err) {
             return callback(err);
@@ -600,9 +523,6 @@ StatisticService.prototype._toDayBN = function (day) {
         difficulty: {
             sum: new BigNumber(day.difficulty.sum),
             count: new BigNumber(day.difficulty.count)
-        },
-        stake: {
-            sum: new BigNumber(day.stake.sum)
         },
         supply: {
             sum: new BigNumber(day.supply.sum)
@@ -854,64 +774,6 @@ StatisticService.prototype.getFees = function (days, next) {
 
 /**
  *
- * @param {Number} days
- * @param {Function} next
- */
-StatisticService.prototype.getStakes = function (days, next) {
-
-    var self = this,
-        dataFlow = {
-            totalSubsidyPOSAmount: 0,
-            stats: []
-        };
-
-    return async.waterfall([function (callback) {
-        return self.totalStatisticRepository.getPOSTotalAmount(function (err, value) {
-
-            if (err) {
-                return callback(err);
-            }
-
-            dataFlow.totalSubsidyPOSAmount = value;
-
-            return callback();
-        });
-    }, function (callback) {
-        return self.getStats(days, function (err, stats) {
-            if (err) {
-                return callback(err);
-            }
-
-            dataFlow.stats = stats;
-
-            return callback();
-        });
-    }], function (err) {
-
-        if (err) {
-            return next(err);
-        }
-
-        var results = [],
-            totalSubsidyPOSAmount = dataFlow.totalSubsidyPOSAmount;
-
-        dataFlow.stats.forEach(function (day) {
-
-            results.push({
-                date: self.formatTimestamp(day.date),
-                sum: totalSubsidyPOSAmount && day.stake && day.stake.sum > 0 ? new BigNumber(day.stake.sum).dividedBy(totalSubsidyPOSAmount).toNumber() : 0
-            });
-
-        });
-
-        return next(err, results);
-
-    });
-
-};
-
-/**
- *
  * @param {Function} nextCb
  * @return {*}
  */
@@ -952,12 +814,12 @@ StatisticService.prototype.getTotal = function(nextCb) {
 
             var difficulty = currentElement.difficulty;
 
-            if (currentElement.flags === ravencore.Block.PROOF_OF_STAKE && difficulty) {
+            if (difficulty) {
                 sumDifficulty += difficulty;
                 countDifficulty++;
             }
 
-            if (subsidy && currentElement.flags === ravencore.Block.PROOF_OF_STAKE) {
+            if (subsidy) {
                 minedCurrencyAmount += subsidy;
             }
 
@@ -977,9 +839,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
 
     }
 
-    return self.totalStatisticRepository.getPOSTotalAmount(function (err, totalSubsidyPOSAmount) {
-
-        var result = {
+    var result = {
             n_blocks_mined: minedBlocks,
             time_between_blocks: sumBetweenTime && countBetweenTime ? sumBetweenTime / countBetweenTime : 0,
             mined_currency_amount: minedCurrencyAmount,
@@ -987,15 +847,25 @@ StatisticService.prototype.getTotal = function(nextCb) {
             number_of_transactions: numTransactions,
             outputs_volume: totalOutputsAmount,
             difficulty: sumDifficulty && countDifficulty ? sumDifficulty / countDifficulty : 0,
-            stake: minedCurrencyAmount && totalSubsidyPOSAmount ? minedCurrencyAmount / totalSubsidyPOSAmount : 0
         };
 
-        return nextCb(null, result);
-
-    });
+    return nextCb(null, result);
 
 };
 
+StatisticsService.prototype.getBlockReward = function(height) {
+  var halvings = Math.floor(height / 2100000);
+  // Force block reward to zero when right shift is undefined.
+  if (halvings >= 64) {
+    return 0;
+  }
+
+  // Subsidy is cut in half every 2,100,000 blocks which will occur approximately every 4 years.
+  var subsidy = new BN(5000 * 1e8);
+  subsidy = subsidy.shrn(halvings);
+
+  return parseInt(subsidy.toString(10));
+};
 /**
  *
  * @return {BigNumber} supply - BigNumber representation of total supply
@@ -1003,7 +873,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
 StatisticService.prototype.getTotalSupply  = function() {
     var blockHeight = this.node.services.ravend.height;
 
-    var supply = (new BigNumber(100000000)).plus((blockHeight - 5000) * 4);
+    var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
 
     return supply;
 }
