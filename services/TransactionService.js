@@ -24,8 +24,7 @@ TransactionService.prototype.getDetailedTransaction = function(txid, callback) {
     return async.waterfall([function(callback) {
 
         return self.node.getDetailedTransaction(txid, function(err, transaction) {
-            tx = transaction;
-            return callback(err);
+            return callback(err, transaction);
         });
 
     }], function(err, transaction) {

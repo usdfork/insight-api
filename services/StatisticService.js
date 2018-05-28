@@ -762,7 +762,7 @@ StatisticService.prototype.getFees = function (days, next) {
 
             results.push({
                 date: self.formatTimestamp(day.date),
-                fee: avg
+                fee: (avg / 1e8).toFixed(8)
             });
 
         });
@@ -854,7 +854,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
 
 };
 
-StatisticService.prototype.getBlockReward = function(height) {
+StatisticService.prototype.getBlockReward = function(height, callback) {
   var halvings = Math.floor(height / 2100000);
   // Force block reward to zero when right shift is undefined.
   if (halvings >= 64) {
@@ -864,8 +864,9 @@ StatisticService.prototype.getBlockReward = function(height) {
   // Subsidy is cut in half every 2,100,000 blocks which will occur approximately every 4 years.
   var subsidy = new BN(5000 * 1e8);
   subsidy = subsidy.shrn(halvings);
-
-  return parseInt(subsidy.toString(10));
+  var sub;
+  sub = parseInt(subsidy.toString(10));
+  callback(null, sub);
 };
 /**
  *
