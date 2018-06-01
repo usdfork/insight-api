@@ -453,8 +453,7 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
                         count: '0'
                     },
                     difficulty: {
-                        sum: '0',
-                        count: '0'
+                        sum: []
                     },
                     supply: {
                         sum: '0'
@@ -484,8 +483,7 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
         dayBN.totalOutputVolume.sum = dayBN.totalOutputVolume.sum.plus(totalOutputs.toString());
 
 
-       dayBN.difficulty.sum = dayBN.difficulty.sum.plus(block.difficulty.toString());
-       dayBN.difficulty.count = dayBN.difficulty.count.plus(1);
+       dayBN.difficulty.sum = dayBN.difficulty.sum.push(block.difficulty.toString());
 
        dayBN.supply.sum = SupplyHelper.getTotalSupplyByHeight(block.height).mul(1e8);
 
@@ -522,8 +520,7 @@ StatisticService.prototype._toDayBN = function (day) {
             count: new BigNumber(day.totalBlocks.count)
         },
         difficulty: {
-            sum: new BigNumber(day.difficulty.sum),
-            count: new BigNumber(day.difficulty.count)
+            sum: day.difficulty.sum
         },
         supply: {
             sum: new BigNumber(day.supply.sum)
@@ -624,12 +621,23 @@ StatisticService.prototype.getDifficulty = function (days, next) {
         }
 
         var results = [];
+        var diffMode = [];
+        var sumDiff = 0;
+
 
         stats.forEach(function (day) {
 
+            diffMode = self.mode(day.difficulty.sum);
+
+            if (diffMode.length-1 > 1) {
+    			       sumDiff = diffMode[diffMode.length-1].toString();
+    		    } else {
+    			       sumDiff = diffMode[0].toString();
+    		    }
+
             results.push({
                 date: self.formatTimestamp(day.date),
-                sum: day.difficulty.sum > 0 && day.difficulty.count > 0 ? new BigNumber(day.difficulty.sum).dividedBy(day.difficulty.count).toNumber() : 0
+                sum: sumDiff
             });
 
         });
@@ -790,8 +798,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
         minedBlocks = 0,
         minedCurrencyAmount = 0,
         allFee = 0,
-        sumDifficulty = 0,
-        countDifficulty = 0,
+        sumDifficulty = [],
         totalOutputsAmount = 0;
 
     while(next && height > 0) {
@@ -816,8 +823,8 @@ StatisticService.prototype.getTotal = function(nextCb) {
             var difficulty = currentElement.difficulty;
 
             if (difficulty) {
-                sumDifficulty += difficulty;
-                countDifficulty++;
+                sumDifficulty = sumDifficulty.push(difficulty.toString());
+
             }
 
             if (subsidy) {
@@ -840,6 +847,15 @@ StatisticService.prototype.getTotal = function(nextCb) {
 
     }
 
+    var totDiff = 0;
+    var totDiffMode = [];
+    totDiffMode = self.mode(sumDifficulty);
+
+    if (totDiffMode.length-1 > 1) {
+         totDiff = totDiffMode[totDiffMode.length-1].toString();
+    } else {
+         totDiff = totDiffMode[0].toString();
+    }
     var result = {
             n_blocks_mined: minedBlocks,
             time_between_blocks: sumBetweenTime && countBetweenTime ? sumBetweenTime / countBetweenTime : 0,
@@ -847,7 +863,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
             transaction_fees: allFee,
             number_of_transactions: numTransactions,
             outputs_volume: totalOutputsAmount,
-            difficulty: sumDifficulty && countDifficulty ? sumDifficulty / countDifficulty : 0,
+            difficulty: totDiff,
         };
 
     return nextCb(null, result);

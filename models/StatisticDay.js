@@ -36,14 +36,9 @@ const statisticDaySchema = new mongoose.Schema({
     },
     difficulty: {
         sum: {
-            type: String,
+            type: Array,
             required: true,
-            default : '0'
-        },
-        count: {
-            type: String,
-            required: true,
-            default : '0'
+            default : []
         }
     },
     supply: {
