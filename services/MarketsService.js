@@ -11,7 +11,10 @@ function MarketsService(options) {
     this.info = {
         price_usd: 0,
         price_btc: 0,
-        market_cap_usd: 0
+        market_cap_usd: 0,
+		available_supply: 0,
+		"24h_volume_usd": 0,
+		percent_change_24h:0
     };
 
     this._updateInfo();
@@ -44,7 +47,7 @@ MarketsService.prototype._updateInfo = function() {
         if (body && _.isArray(body) && body.length) {
             var needToTrigger = false;
 
-            ['price_usd', 'price_btc', 'market_cap_usd', 'available_supply'].forEach(function (param) {
+            ['price_usd', 'price_btc', 'market_cap_usd', 'available_supply', '24h_volume_usd', 'percent_change_24h'].forEach(function (param) {
 
                 if (self.info[param] !== body[0][param]) {
                     self.info[param] = body[0][param];

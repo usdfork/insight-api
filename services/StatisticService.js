@@ -703,10 +703,12 @@ StatisticService.prototype.getOutputs = function (days, next) {
         var results = [];
 
         stats.forEach(function (day) {
-
+			
+			var outputBN = new BigNumber(day.totalOutputVolume.sum);
+			
             results.push({
                 date: self.formatTimestamp(day.date),
-                sum: day.totalOutputVolume && day.totalOutputVolume.sum > 0 ? day.totalOutputVolume.sum : 0
+                sum: day.totalOutputVolume && day.totalOutputVolume.sum > 0 ? outputBN.dividedBy(1e8).toFixed(8) : 0
             });
 
         });
