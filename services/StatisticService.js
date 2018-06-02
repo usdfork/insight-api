@@ -31,6 +31,7 @@ function StatisticService(options) {
     this.blocksByHeight = LRU(999999);
     this.feeByHeight = LRU(999999);
     this.outputsByHeight = LRU(999999);
+	this.difficultyByHeight = LRU(999999);
 
 
     /**
@@ -140,6 +141,7 @@ StatisticService.prototype.process24hBlock = function (data, next) {
         subsidy = data.subsidy,
         fee = data.fee,
         totalOutputs = data.totalOutputs,
+		difficulty = data.blockJson.difficulty,
         currentDate = new Date();
 
     currentDate.setDate(currentDate.getDate() - 1);
@@ -152,6 +154,7 @@ StatisticService.prototype.process24hBlock = function (data, next) {
         self.subsidyByBlockHeight.set(block.height, subsidy, maxAge);
         self.feeByHeight.set(block.height, fee, maxAge);
         self.outputsByHeight.set(block.height, totalOutputs, maxAge);
+		self.difficultyByHeight.set(block.height, difficulty, maxAge);
     }
 
     return next();
@@ -483,7 +486,7 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
         dayBN.totalOutputVolume.sum = dayBN.totalOutputVolume.sum.plus(totalOutputs.toString());
 
 
-       dayBN.difficulty.sum = dayBN.difficulty.sum.push(block.difficulty.toString());
+       dayBN.difficulty.sum.push(block.difficulty.toString());
 
        dayBN.supply.sum = SupplyHelper.getTotalSupplyByHeight(block.height).mul(1e8);
 
@@ -805,8 +808,8 @@ StatisticService.prototype.getTotal = function(nextCb) {
 
         var currentElement = self.blocksByHeight.get(height),
             subsidy = self.subsidyByBlockHeight.get(height),
-            outputAmount = self.outputsByHeight.get(height);
-
+            outputAmount = self.outputsByHeight.get(height),
+			difficulty = self.difficultyByHeight.get(height);
         if (currentElement) {
 
             var nextElement = self.blocksByHeight.get(height + 1),
@@ -820,11 +823,10 @@ StatisticService.prototype.getTotal = function(nextCb) {
             numTransactions += currentElement.tx.length;
             minedBlocks++;
 
-            var difficulty = currentElement.difficulty;
 
             if (difficulty) {
-                sumDifficulty = sumDifficulty.push(difficulty.toString());
-
+				difficulty = JSON.parse(JSON.stringify(difficulty));
+                sumDifficulty.push(difficulty.toString());
             }
 
             if (subsidy) {
@@ -854,7 +856,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
     if (totDiffMode.length-1 > 1) {
          totDiff = totDiffMode[totDiffMode.length-1].toString();
     } else {
-         totDiff = totDiffMode[0].toString();
+         totDiff = totDiffMode[0];
     }
     var result = {
             n_blocks_mined: minedBlocks,
@@ -894,6 +896,27 @@ StatisticService.prototype.getTotalSupply  = function() {
     var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
 
     return supply;
+};
+StatisticService.prototype.mode = function(array) {
+		if (!array.length) return [];
+		var modeMap = {},
+			maxCount = 0,
+			modes = [];
+
+		array.forEach(function(val) {
+			if (!modeMap[val]) modeMap[val] = 1;
+			else modeMap[val]++;
+
+			if (modeMap[val] > maxCount) {
+				modes = [val];
+				maxCount = modeMap[val];
+			}
+			else if (modeMap[val] === maxCount) {
+				modes.push(val);
+				maxCount = modeMap[val];
+			}
+		});
+		return modes;
 }
 
 module.exports = StatisticService;
