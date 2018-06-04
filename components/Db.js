@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Common = require('../lib/common');
-
+mongoose.Promise = global.Promise;
 function Db(node, config) {
     this.config = config;
     this.node = node;
