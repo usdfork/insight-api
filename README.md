@@ -1,5 +1,16 @@
 # Insight API
 
+## Table of Contents
+* [Getting Started](#getting-started)
+
+### Statistics
+* [Total 24h](#total-24h-statistic)
+* [Transactions](#transactions-statistic)
+* [Fees](#fees-statistic)
+* [Outputs](#outputs-statistic)
+* [Difficulty](#difficulty-statistic)
+* [Total Supply](#total-supply-statistic)
+
 A Ravencoin blockchain REST and web socket API service for [Ravencore Node](https://github.com/underdarkskies/ravencore-node).
 
 This is a backend-only service. If you're looking for the web frontend application, take a look at https://github.com/underdarkskies/insight-ui.
@@ -7,7 +18,7 @@ This is a backend-only service. If you're looking for the web frontend applicati
 ## Getting Started
 
 ```bashl
-npm install -g ravencore-node@latest
+npm install -g ravencore-node
 ravencore-node create mynode
 cd mynode
 ravencore-node install insight-api
@@ -43,24 +54,118 @@ Or disabled entirely with:
       "disableRateLimiter": true
     }
   }
-  ```
+```
+
+**Note:** `routePrefix` can be configurable in `ravencore-node.json` with:
+
+``` json
+  "servicesConfig": {
+    "insight-api": {
+      "routePrefix": "insight-api",
+    }
+  }
+```
+
 
 
 ## API HTTP Endpoints
 
-### Charts: mining-revenue, difficulty, block-interval, block-size 
-* `GET /chart/difficulty`
+## Statistics
 
-````json
-{"name":"Difficulty","data":{"x":"height","json":{"height":[206750,206751,....207021],"difficulty":[25348.67328088,25348.67328088,....25348.67328088]},"names":{"height":"Height","difficulty":"Difficulty"}}}
-````
+### Total 24h Statistic
+```
+  `GET` /insight-api/statistics/total
+```
+This would return:
+```
+    {
+        n_blocks_mined: 1268,
+        time_between_blocks: 86301,
+        mined_currency_amount: 1268000000000000,
+        transaction_fees: 633992859997,
+        number_of_transactions: 2547,
+        outputs_volume: 46920965480,
+        difficulty: 981808167.7687966,
+    }
+```
+### Transactions Statistic
+```
+  `GET` /insight-api/statistics/transactions?days=14
+```
+This would return:
+```
+[
+    {
+      date: "2017-05-30",
+        transaction_count: 1087,
+        block_count: 541
+    },
+    ...
+]
+```
 
-* `GET /charts`
+### Fees Statistic
+```
+  `GET` /insight-api/statistics/fees?days=14
+```
+This would return:
+```
+[
+   {
+       date: "2017-06-06",
+       fee: 500000000
+   },
+   ...
+]
+```
+### Outputs Statistic
+```
+  `GET` /insight-api/statistics/outputs?days=14
+```
+This would return:
+```
+[
+   {
+       date: "2017-06-06",
+       sum: 0
+   },
+   ...
+]
+```
+### Difficulty Statistic
+```
+  `GET` /insight-api/statistics/difficulty?days=14
+```
+This would return:
+```
+[
+    {
+        date: "2017-06-06",
+        sum: 0
+    },
+    ...
+]
+```
 
-````json
-{"charts":{"block-size":{"name":"Block Size"},"block-interval":{"name":"Block Interval"},"difficulty":{"name":"Difficulty"},"mining-revenue":{"name":"Mining revenue"}}}
-````
+### Total Supply Statistic
 
+```
+  `GET` /insight-api/supply
+```
+or
+```
+  `GET` /insight-api/supply?format=object
+```
+This would return:
+```
+100091264
+```
+or
+```
+{
+    "supply": "100091264"
+}
+```
 
 ### Block
 ```
@@ -318,9 +423,14 @@ Where "xxx" can be:
 
 ### Utility Methods
 ```
-  /insight-api/utils/estimatefee[?nbBlocks=2]
+  /insight-api/utils/estimatesmartfee[?nbBlocks=6&mode=economical]
 ```
-
+Sample output:
+````
+{
+  "6":0.00001047
+}
+````
 
 ## Web Socket API
 The web socket API is served using [socket.io](http://socket.io).
