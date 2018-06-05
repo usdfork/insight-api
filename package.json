@@ -1,40 +1,12 @@
 {
   "name": "insight-api",
   "description": "A Ravencoin blockchain REST and web socket API service for Ravencore Node.",
-  "version": "0.4.3",
+  "version": "1.0.1",
   "repository": "git://github.com/underdarkskies/insight-api.git",
   "contributors": [
     {
-      "name": "Gustavo Cortez",
-      "email": "cmgustavo83@gmail.com"
-    },
-    {
-      "name": "Ivan Socolsky",
-      "email": "jungans@gmail.com"
-    },
-    {
-      "name": "Juan Ignacio Sosa Lopez",
-      "email": "bechilandia@gmail.com"
-    },
-    {
-      "name": "Manuel Araoz",
-      "email": "manuelaraoz@gmail.com"
-    },
-    {
-      "name": "Matias Alejo Garcia",
-      "email": "ematiu@gmail.com"
-    },
-    {
-      "name": "Mario Colque",
-      "email": "colquemario@gmail.com"
-    },
-    {
-      "name": "Patrick Nagurny",
-      "email": "patrick@bitpay.com"
-    },
-    {
-      "name": "Braydon Fuller",
-      "email": "braydon@bitpay.com"
+      "name": "Under",
+      "email": ""
     }
   ],
   "bugs": {
@@ -68,8 +40,8 @@
     "lru-cache": "^4.0.1",
     "mongoose": "^4.11.8",
     "morgan": "^1.7.0",
-    "ravencore-lib": "underdarkskies/ravencore-lib#DEV",
-    "ravencore-message": "underdarkskies/ravencore-message#DEV",
+    "ravencore-lib": "underdarkskies/ravencore-lib",
+    "ravencore-message": "underdarkskies/ravencore-message",
     "request": "^2.83.0"
   },
   "peerDependencies": {},
