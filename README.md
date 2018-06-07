@@ -419,6 +419,7 @@ Where "xxx" can be:
  * getDifficulty
  * getBestBlockHash
  * getLastBlockHash
+ * getMiningInfo
 
 
 ### Utility Methods
@@ -435,7 +436,9 @@ Sample output:
 ## Web Socket API
 The web socket API is served using [socket.io](http://socket.io).
 
-The following are the events published by insight:
+### `inv` room:
+
+The following are the events published by insight in the `inv` room:
 
 `tx`: new transaction received from network. This event is published in the 'inv' room. Data will be a app/models/Transaction object.
 Sample output:
@@ -457,22 +460,152 @@ Sample output:
   ...
 }
 ```
-
-`<ravencoinAddress>`: new transaction concerning <ravencoinAddress> received from network. This event is published in the `<ravencoinAddress>` room.
-
-`status`: every 1% increment on the sync task, this event will be triggered. This event is published in the `sync` room.
-
+`info`: General Statistics Info
 Sample output:
 ```
 {
-  blocksToSync: 164141,
-  syncedBlocks: 475,
-  upToExisting: true,
-  scanningBackward: true,
-  isEndGenesis: true,
-  end: "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943",
-  isStartGenesis: false,
-  start: "000000009f929800556a8f3cfdbe57c187f2f679e351b12f7011bfc276c41b6d"
+info:
+  {
+  balance: 0
+  blocks: 245823
+  connections: 123
+  difficulty: 18231.18159436285
+  errors: ""
+  keypoololdest: 1528311725
+  keypoolsize: 2000
+  network: "livenet"
+  paytxfee: 0
+  protocolversion: 70015
+  proxy: ""
+  relayfee: 0.00001
+  reward: 500000000000
+  testnet: false
+  timeoffset: 0
+  version: 152000
+  walletversion: 10000
+  }
+miningInfo:
+  {
+  blocks: 245823
+  difficulty: 18231.18159436285
+  networkhashps: 1311616809584.154
+  chain: "main"
+  }
+supply: "1229115000"
+```
+`markets_info`: General Price and Market data
+Sample output:
+```
+{
+  24h_volume_usd: "280378.0"
+  available_supply: "1223775205.0"
+  market_cap_usd: "36072365.0"
+  percent_change_24h: "-0.25"
+  price_btc: "0.00000383"
+  price_usd: "0.0294763"
+}
+```
+### `raven` room: 
+
+`raven/tx`: Returns a transformed tx as a json element detailing the transaction
+Sample output:
+```
+{
+txid: "4aef2faba5add0a467b4bc636024c7ed2501215a171df7cb7ed7376fe6bfeeca"
+valueOut: 5000
+vin:(0)
+  []
+  length: 0
+vout: (1)
+  [
+    {
+    value: 500000000000
+    address: "RKbh4QopviguAWveJgjmoFKNMxewRFyvAb"
+    }
+  ] 
+isRBF: true
+}
+```
+
+`raven/block`: Returns a transformed block as a json element detailing the block
+Sample output:
+```
+{
+block:
+  {
+  bits: "1b03983c"
+  chainwork: "000000000000000000000000000000000000000000000000a28c9a9e0fbcac74"
+  confirmations: 1
+  difficulty: 18231.18159436
+  hash: "0000000000031522362b3b0d4579ed4bbee206fb7397383e835134ee1c394c2d"
+  height: 245845
+  isMainChain: true
+  merkleroot: "7e036837f82cb526cc44db73504ab9c051c6f37eeb7e64aa543757b4405b0d1b"
+  minedBy: "RVG96MbaKEDFzzj9NzbAuxkDt86KAm2Qj5"
+  nonce: 1578377516
+  poolInfo: {poolName: "f2pool", url: "http://f2pool.com/"}
+  previousblockhash: "0000000000037953f3d835fb94e168520b2a7edbb1268ef987048dfa916cd25f"
+  reward: 5000
+  size: 26990
+  time: 1528388943
+  tx:(7) 
+    [
+    "ea4f02a17146117e5961cfe01e7e00067f59b2167d17a415717fadb8a823456e"
+    "d9ec249e1a2297610b5af03238f2de34bd1ba739188fd1ea33c464fe77a07ce1"
+    "062c951f32f60937c58f009e5c7eaf19db93148e9b677651fe83f6ebfded195e"
+    "4d7853c1aa1c9b7722ab7ec34bf053a4661eb82f68075603f69006ece4f21f1c"
+    "63b0219ee6d3204dc604660d2aa6eed6fd05dea912777e14322a3ed56886a102"
+    "c5e302e3d9b7be5dfab1a219052fb8424071407e978cb57e1a9a0986e9c7f96d"
+    "01ee0c906791f9c3e613a4c4b8d87c45b50b9e12058dd69ce5a647e028710b6d"
+    ]
+  version: 536870912
+  }
+transactions: (7)
+  [
+    {
+    blockhash: "0000000000031522362b3b0d4579ed4bbee206fb7397383e835134ee1c394c2d"
+    blockheight: 245845
+    blocktime: 1528388943
+    confirmations: 1
+    isCoinBase: true
+    locktime: 703249321
+    size: 250
+    time: 1528388943
+    txid: "ea4f02a17146117e5961cfe01e7e00067f59b2167d17a415717fadb8a823456e"
+    valueOut:5000.0003294
+    version:1
+    vin: (1)
+      [
+        {
+        coinbase: "0355c0032cfabe6d6d0000000000000000000000000000...0000000000000000000"
+        n: 0
+        sequence: 3
+        }
+      ]
+    vout: (2)
+      [
+        {
+        n: 0
+        scriptPubKey:
+          {
+          hex: "76a914db2f9b86eb5eae8dae8dfb1da75440584be36daa88ac"
+          asm: "OP_DUP OP_HASH160 db2f9b86eb5eae8dae8dfb1da75440584be36daa OP_EQUALVERIFY OP_CHECKSIG"
+          addresses: (1)
+            [
+            "RVG96MbaKEDFzzj9NzbAuxkDt86KAm2Qj5"
+            ]
+          type: "pubkeyhash"
+          }
+        spentHeight: null
+        spentIndex: null
+        spentTxId: null
+        value: "5000.00032940"
+        }
+       ... 
+      ]
+    }
+    ...
+  ]
 }
 ```
 
