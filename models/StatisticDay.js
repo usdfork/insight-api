@@ -48,6 +48,13 @@ const statisticDaySchema = new mongoose.Schema({
             default : '0'
         }
     },
+    poolData: {
+        pool: {
+            type: Array,
+            required: true,
+            default : []
+        }
+    },
     date: {
         type: Date,
         required: true,
