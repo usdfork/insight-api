@@ -34,6 +34,7 @@ function StatisticService(options) {
     this.outputsByHeight = LRU(999999);
 	  this.difficultyByHeight = LRU(999999);
     this.minedByByHeight = LRU(999999);
+		this.netHashByHeight = LRU(999999);
 
 		/**
 		 * 1h Cache
@@ -162,6 +163,7 @@ StatisticService.prototype.process24hBlock = function (data, next) {
         totalOutputs = data.totalOutputs,
 		    difficulty = data.blockJson.difficulty,
         minedBy = data.minedBy,
+				netHash = data.netHash,
         currentDate = new Date(),
 				currentDateHour = new Date();
 
@@ -178,6 +180,7 @@ StatisticService.prototype.process24hBlock = function (data, next) {
         self.outputsByHeight.set(block.height, totalOutputs, maxAge);
 		    self.difficultyByHeight.set(block.height, difficulty, maxAge);
         self.minedByByHeight.set(block.height, minedBy, maxAge);
+				self.netHashByHeight.set(block.height, netHash, maxAge);
     }
 		var minTimestampHour = currentDateHour.getTime() / 1000,
         maxAgeHour = (block.time - minTimestampHour) * 1000;
@@ -299,6 +302,7 @@ StatisticService.prototype._getBlockInfo = function (blockHeight, next) {
 			      fee: 0,
 			      totalOutputs: 0,
             minedBy: null,
+						netHash: null,
 						transaction: null
 		};
 
@@ -382,6 +386,26 @@ StatisticService.prototype._getBlockInfo = function (blockHeight, next) {
 			      });
 
             return callback();
+
+		}, function (callback) {
+
+		          /**
+			 * networkhashps
+		           */
+
+			return self.node.getNetworkHash(blockHeight, function(err, hashps) {
+
+				if((err && err.code === -5) || (err && err.code === -8)) {
+						return callback(err);
+				} else if(err) {
+						return callback(err);
+				}
+
+				dataFlow.netHash = hashps;
+
+				return callback();
+
+	 		});
 
 		}, function (callback) {
 
@@ -497,6 +521,7 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
         fee = data.fee,
         totalOutputs = data.totalOutputs,
         mined = data.minedBy,
+				netHash = data.netHash,
         dataFlow = {
         day: null,
         formattedDay: null
@@ -534,6 +559,10 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
                     poolData: {
                         pool: []
                     },
+										netHash: {
+                        sum: '0',
+												count: '0'
+										},
                     date: date
                 };
 
@@ -560,6 +589,9 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
 
 
        dayBN.difficulty.sum.push(block.difficulty.toString());
+
+			 dayBN.netHash.sum = dayBN.netHash.sum.plus(netHash.toString());
+       dayBN.netHash.count = dayBN.netHash.count.plus(1);
 
 
 	   var objIndex = dayBN.poolData.pool.findIndex((obj => obj.minedby == mined));
@@ -616,6 +648,10 @@ StatisticService.prototype._toDayBN = function (day) {
         poolData: {
             pool: day.poolData.pool
         },
+				netHash: {
+						sum: new BigNumber(day.netHash.sum),
+						count: new BigNumber(day.netHash.count)
+				},
         date: day.date
     };
 };
@@ -738,6 +774,33 @@ StatisticService.prototype.getDifficulty = function (days, next) {
             results.push({
                 date: self.formatTimestamp(day.date),
                 sum: sumDiff
+            });
+
+        });
+
+        return next(err, results);
+
+    });
+
+};
+
+StatisticService.prototype.getNetHash = function (days, next) {
+
+    var self = this;
+
+    return self.getStats(days, function (err, stats) {
+
+        if (err) {
+            return next(err);
+        }
+
+        var results = [];
+
+        stats.forEach(function (day) {
+
+            results.push({
+                date: self.formatTimestamp(day.date),
+                sum: day.netHash.sum > 0 && day.netHash.count > 0 ? new BigNumber(day.netHash.sum).dividedBy(day.netHash.count).toNumber() : 0
             });
 
         });
@@ -951,7 +1014,9 @@ StatisticService.prototype.getTotal = function(nextCb) {
         allFee = 0,
         sumDifficulty = [],
         totalOutputsAmount = 0,
-        dayPoolData = [];
+        dayPoolData = [],
+				sumNetHash = 0,
+				countNetHash = 0;
 
     while(next && height > 0) {
 
@@ -959,7 +1024,8 @@ StatisticService.prototype.getTotal = function(nextCb) {
             subsidy = self.subsidyByBlockHeight.get(height),
             outputAmount = self.outputsByHeight.get(height),
 			      difficulty = self.difficultyByHeight.get(height),
-            mined = self.minedByByHeight.get(height);
+            mined = self.minedByByHeight.get(height),
+						netHash = self.netHashByHeight.get(height);
         if (currentElement) {
 
             var nextElement = self.blocksByHeight.get(height + 1),
@@ -987,7 +1053,12 @@ StatisticService.prototype.getTotal = function(nextCb) {
                 allFee += fee;
             }
 
-            if (outputAmount) {
+						if (netHash) {
+							sumNetHash += netHash;
+							countNetHash++;
+            }
+
+						if (outputAmount) {
                 totalOutputsAmount += outputAmount;
             }
 
@@ -1054,6 +1125,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
             number_of_transactions: numTransactions,
             outputs_volume: totalOutputsAmount,
             difficulty: totDiff,
+						network_hash_ps: sumNetHash && countNetHash ? sumNetHash / countNetHash : 0,
             blocks_by_pool: poolsArr
         };
 
