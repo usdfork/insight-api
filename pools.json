@@ -144,11 +144,12 @@
     	]
     },
 	{
-    	"poolName": "icemining",
-    	"url": "https://icemining.ca/",
+    	"poolName": "icemining.ca",
+    	"url": "https://icemining.ca/site/gocoins?id=2089",
     	"searchStrings": [
     		"RUiN7o6TPw4q4efkhJLuMq4bKmLRu4mnMB",
-			"RJLruFYyPbMJ38R8n627KabKpgWios9Pqm"
+		"RJLruFYyPbMJ38R8n627KabKpgWios9Pqm",
+		"RUN8dXY4qm2WfRWDveL2LbMeRbm1SWGMh9"
     	]
     },
 	{
@@ -271,10 +272,33 @@
   	},
 	{
   		"poolName": "RavenMiner",
-  		"url": "http://ravenminer.com/",
+  		"url": "https://ravenminer.com/",
   		"searchStrings": [
   			"RNJMLCLiss7hf23rZSq9BzhoQ94H5EDQTy",
-			"RFtHhp8S43JDnzAJz9GDvups6pdJjBA7nM"
+			"RFtHhp8S43JDnzAJz9GDvups6pdJjBA7nM",
+			"RY2ApTjKWuJCq6rfu8eYRKVuciwAaAUnB6"
+  		]
+  	},
+	{
+  		"poolName": "MinerMore",
+  		"url": "https://minermore.com",
+  		"searchStrings": [
+  			"RTraysi1KpS3qZDHB7ATqWsLxtvwdB3UNe"
+  		]
+  	},
+	{
+  		"poolName": "ThreeEyed",
+  		"url": "",
+  		"searchStrings": [
+  			"RHnYLF8s5UbyiCyUxhx6eJFJVwtTReSRPp",
+			"RQ3vYTtTuZhFamdpt4xoeu7516tFZBAVhy"
+  		]
+  	},
+	{
+  		"poolName": "RavenMiner EU",
+  		"url": "https://eu.ravenminer.com",
+  		"searchStrings": [
+			"RY2ApTjKWuJCq6rfu8eYRKVuciwAaAUnB6"
   		]
   	},
 	{
