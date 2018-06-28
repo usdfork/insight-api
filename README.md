@@ -6,6 +6,8 @@
 ### Statistics
 * [Total 24h](#total-24h-statistic)
 * [Transactions](#transactions-statistic)
+* [NetHash](#nethash-statistic)
+* [Pools](#pools-statistic)
 * [Fees](#fees-statistic)
 * [Outputs](#outputs-statistic)
 * [Difficulty](#difficulty-statistic)
@@ -146,7 +148,34 @@ This would return:
     ...
 ]
 ```
-
+### Pools Statistic
+```
+  `GET` /insight-api/statistics/pools?date=2018-05-14
+```
+This would return:
+```
+[
+    {
+        date: "2018-05-14",
+        ...
+    }
+    
+]
+```
+### Nethash Statistic
+```
+  `GET` /insight-api/statistics/network-hash?days=14
+```
+This would return:
+```
+[
+    {
+        date: "2017-06-06",
+        sum: 0
+    },
+    ...
+]
+```
 ### Total Supply Statistic
 
 ```
@@ -420,6 +449,7 @@ Where "xxx" can be:
  * getBestBlockHash
  * getLastBlockHash
  * getMiningInfo
+ * getPeerInfo
 
 
 ### Utility Methods
