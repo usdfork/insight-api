@@ -49,6 +49,13 @@
     	]
     },
 	{
+    	"poolName": "Elitehash",
+    	"url": "http://rvn.elitehash.net/",
+    	"searchStrings": [
+    		"RAs1CD7862EJh4MFCbtDYvDJVGEewd6iti"
+    	]
+    },
+	{
     	"poolName": "CoinFoundry",
     	"url": "https://coinfoundry.org/",
     	"searchStrings": [
