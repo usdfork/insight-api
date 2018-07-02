@@ -1,5 +1,12 @@
 [
 	{
+    	"poolName": "ChainWorks",
+    	"url": "http://ame-po01.chainworksindustries.com/rvn/index.php?page=statistics&action=pool",
+    	"searchStrings": [
+    		"RRwTFeF1JGcZewN7vqSGX4dbQWCubAGFSr"
+    	]
+    },
+	{
     	"poolName": "DEDPOOL",
     	"url": "https://pool.dedpool.io/",
     	"searchStrings": [
