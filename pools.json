@@ -1,7 +1,7 @@
 [
 	{
-    	"poolName": "ChainWorks",
-    	"url": "http://ame-po01.chainworksindustries.com/rvn/index.php?page=statistics&action=pool",
+    	"poolName": "Pyroxene (theMINE)",
+    	"url": "http://pyroxene.chainworksindustries.com/rvn/",
     	"searchStrings": [
     		"RRwTFeF1JGcZewN7vqSGX4dbQWCubAGFSr"
     	]
@@ -234,7 +234,8 @@
     	"url": "https://minepool.com/",
     	"searchStrings": [
     		"RHLJmCnpZ9JKBxYj1RWc7teD8gHSxkTozs",
-			"RJ4EanQUEbh83enGtitArYUZKvWfcetvXh"
+		"RJ4EanQUEbh83enGtitArYUZKvWfcetvXh",
+		"RKvj4FPqSZFt4itytdp9BWm8yvP33CVQ4h"
     	]
     },
 	{
