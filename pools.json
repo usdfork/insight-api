@@ -1,5 +1,12 @@
 [
 	{
+    	"poolName": "SubscriberPool",
+    	"url": "https://subscriberpool.com",
+    	"searchStrings": [
+    		"RXhcF3RjuXzPxfQNai3XpVgLZ8pvJwyMvE"
+    	]
+    },
+	{
     	"poolName": "Pyroxene (theMINE)",
     	"url": "http://pyroxene.chainworksindustries.com/rvn/",
     	"searchStrings": [
