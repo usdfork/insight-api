@@ -1,27 +1,67 @@
 {
   "name": "insight-api",
-  "description": "A Ravencoin blockchain REST and web socket API service for Ravencore Node.",
+  "description": "A Zelcash blockchain REST and web socket API service for zelcash-bitcore Node.",
   "version": "1.0.3",
-  "repository": "git://github.com/underdarkskies/insight-api.git",
+  "repository": "git://github.com/TheTrunk/insight-api.git",
   "contributors": [
+    {
+      "name": "Gustavo Cortez",
+      "email": "cmgustavo83@gmail.com"
+    },
+    {
+      "name": "Ivan Socolsky",
+      "email": "jungans@gmail.com"
+    },
+    {
+      "name": "Juan Ignacio Sosa Lopez",
+      "email": "bechilandia@gmail.com"
+    },
+    {
+      "name": "Manuel Araoz",
+      "email": "manuelaraoz@gmail.com"
+    },
+    {
+      "name": "Matias Alejo Garcia",
+      "email": "ematiu@gmail.com"
+    },
+    {
+      "name": "Mario Colque",
+      "email": "colquemario@gmail.com"
+    },
+    {
+      "name": "Patrick Nagurny",
+      "email": "patrick@bitpay.com"
+    },
+    {
+      "name": "Braydon Fuller",
+      "email": "braydon@bitpay.com"
+    },
+    {
+      "name": "Jack Grigg",
+      "email": "jack@z.cash"
+    },
+    {
+      "name": "TheTrunk",
+      "email": "tadeas.kmenta@zel.cash"
+    },
     {
       "name": "Under",
       "email": ""
     }
   ],
   "bugs": {
-    "url": "https://github.com/underdarkskies/insight-api/issues"
+    "url": "https://github.com/TheTrunk/insight-api/issues"
   },
-  "homepage": "https://github.com/underdarkskies/insight-api",
+  "homepage": "https://github.com/TheTrunk/insight-api",
   "license": "MIT",
   "keywords": [
     "insight",
     "insight api",
     "blockchain",
-    "ravencoin api",
+    "zelcash api",
     "blockchain api",
     "json",
-    "ravencore"
+    "zelcash"
   ],
   "engines": {
     "node": ">=0.12.0"
@@ -30,7 +70,7 @@
     "test": "NODE_ENV=test mocha -R spec --recursive"
   },
   "main": "lib",
-  "ravencoreNode": "lib",
+  "bitcoreNode": "lib",
   "dependencies": {
     "async": "*",
     "bignumber.js": "^4.0.2",
@@ -40,8 +80,8 @@
     "lru-cache": "^4.0.1",
     "mongoose": "^5.1.4",
     "morgan": "^1.7.0",
-    "ravencore-lib": "underdarkskies/ravencore-lib",
-    "ravencore-message": "underdarkskies/ravencore-message",
+    "bitcore-lib-zelcash": "git://github.com/TheTrunk/bitcore-lib-zelcash#master",
+    "bitcore-message-zelcash": "git://github.com/TheTrunk/bitcore-message-zelcash#master",
     "request": "^2.83.0"
   },
   "peerDependencies": {},

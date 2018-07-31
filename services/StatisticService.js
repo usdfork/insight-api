@@ -1,7 +1,7 @@
 'use strict';
 
 var async = require('async');
-var ravencore = require('ravencore-lib');
+var bitcore = require('bitcore-lib-zelcash');
 var BigNumber = require('bignumber.js');
 var LRU = require('lru-cache');
 var Common = require('../lib/common');
@@ -9,7 +9,7 @@ var util = require('util');
 var EventEmitter = require('events').EventEmitter;
 var STATISTIC_TYPE = 'STATISTIC';
 var SupplyHelper = require('../helpers/SupplyHelper');
-var BN = ravencore.crypto.BN;
+var BN = bitcore.crypto.BN;
 var pools = require('../pools.json');
 var _ = require('lodash');
 /**
@@ -84,7 +84,7 @@ util.inherits(StatisticService, EventEmitter);
 StatisticService.prototype.start = function (callback) {
 
     var self = this,
-        height = self.node.services.ravend.height;
+        height = self.node.services.bitcoind.height;
 
     return async.waterfall([function (callback) {
         return self.lastBlockRepository.setLastBlockType(STATISTIC_TYPE, 0, function(err) {
@@ -140,7 +140,7 @@ StatisticService.prototype.start = function (callback) {
             return callback(err);
         }
 
-        self.node.services.ravend.on('tip', self._rapidProtectedUpdateTip.bind(self));
+        self.node.services.bitcoind.on('tip', self._rapidProtectedUpdateTip.bind(self));
         self._rapidProtectedUpdateTip(height);
 
         return callback(err);
@@ -1249,7 +1249,7 @@ StatisticService.prototype.getPoolInfo = function(paddress) {
  * @return {BigNumber} supply - BigNumber representation of total supply
  */
 StatisticService.prototype.getTotalSupply  = function() {
-    var blockHeight = this.node.services.ravend.height;
+    var blockHeight = this.node.services.bitcoind.height;
 
     var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
 
