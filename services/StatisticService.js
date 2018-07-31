@@ -1211,7 +1211,20 @@ StatisticService.prototype.getBlockReward = function(height, callback) {
   }
 
   // Subsidy is cut in half every 2,100,000 blocks which will occur approximately every 4 years.
-  var subsidy = new BN(5000 * 1e8);
+  var subsidy = new BN(150 * 1e8);
+  
+    // Mining slow start
+  // The subsidy is ramped up linearly, skipping the middle payout of
+  // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
+  if (height < (5000 / 2)) {
+    subsidy /= 5000;
+    subsidy *= height;
+    return subsidy;
+  } else if (height < 5000) {
+    subsidy /= 5000;
+    subsidy *= (height+1);
+    return subsidy;
+  }
   subsidy = subsidy.shrn(halvings);
   var sub;
   sub = parseInt(subsidy.toString(10));
@@ -1219,14 +1232,27 @@ StatisticService.prototype.getBlockReward = function(height, callback) {
 };
 
 StatisticService.prototype.getBlockRewardr = function(height) {
-  var halvings = Math.floor(height / 2100000);
+  var halvings = Math.floor(height / 657850);
   // Force block reward to zero when right shift is undefined.
   if (halvings >= 64) {
     return 0;
   }
 
-  // Subsidy is cut in half every 2,100,000 blocks which will occur approximately every 4 years.
-  var subsidy = new BN(5000 * 1e8);
+  // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
+  var subsidy = new BN(150 * 1e8);
+  
+    // Mining slow start
+  // The subsidy is ramped up linearly, skipping the middle payout of
+  // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
+  if (height < (5000 / 2)) {
+    subsidy /= 5000;
+    subsidy *= height;
+    return subsidy;
+  } else if (height < 5000) {
+    subsidy /= 5000;
+    subsidy *= (height+1);
+    return subsidy;
+  }
   subsidy = subsidy.shrn(halvings);
 
   return parseInt(subsidy.toString(10));
@@ -1251,7 +1277,7 @@ StatisticService.prototype.getPoolInfo = function(paddress) {
 StatisticService.prototype.getTotalSupply  = function() {
     var blockHeight = this.node.services.bitcoind.height;
 
-    var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
+    var supply = ((new BigNumber(0)).plus((blockHeight - 5000) * 150) + 312500 + 13020000);
 
     return supply;
 };
