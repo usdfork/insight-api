@@ -444,7 +444,7 @@ Where "xxx" can be:
 
 ### Utility Methods
 ```
-  /insight-api/utils/estimatesmartfee[?nbBlocks=6&mode=economical]
+  /insight-api/utils/estimatefee[?nbBlocks=6]
 ```
 Sample output:
 ````
