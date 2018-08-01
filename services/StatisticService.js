@@ -559,10 +559,9 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
                     poolData: {
                         pool: []
                     },
-										netHash: {
+                    netHash: {
                         sum: '0',
-												count: '0'
-										},
+                        count: '0'},
                     date: date
                 };
 
