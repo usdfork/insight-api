@@ -1276,7 +1276,7 @@ StatisticService.prototype.getPoolInfo = function(paddress) {
 StatisticService.prototype.getTotalSupply  = function() {
     var blockHeight = this.node.services.bitcoind.height;
 
-    var supply = ((new BigNumber(0)).plus((blockHeight - 5000) * 150) + 312500 + 13020000);
+    var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
 
     return supply;
 };
