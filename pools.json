@@ -31,22 +31,43 @@
 	  "poolName": "CloudPools",
 	  "url": "http://zel.cloudpools.net/",
 	  "searchStrings": [
-		"cloudpools"
+		"t1RLgxJn8vfhiYeAaDnSigBzWkSKGsBiaM4"
 	  ]
 	},
 	{
 	  "poolName": "CoinBlockers",
 	  "url": "https://zel.coinblockers.com/",
 	  "searchStrings": [
-		"coinblockers"
+		"t1RBpVZmcwgoMFdThtUrHGEqJVz6BRPExFi"
 	  ]
 	},
 	{
 	  "poolName": "equipool.1ds.us",
 	  "url": "https://equipool.1ds.us/getting_started",
 	  "searchStrings": [
-		"equipool.1ds.us"
+		"t1Nf8tSxVhQKiGhQXLp73XdWgX2aDAhMr5Ft"
 	  ]
+	},
+	{
+		"poolName": "Windfall mining",
+		"url": "https://www.windfallmining.com/",
+		"searchStrings": [
+		  "t1P1A4883Bs9TNNBzuYzbqzmWW6GXN3VZH7"
+		]
+	},
+	{
+		"poolName": "VOIDr",
+		"url": "https://voidr.net/",
+		"searchStrings": [
+		  "t1KPD9ymeg7sCzAhrSPQ2BgLDRM2XGYqb3S"
+		]
+	},
+	{
+		"poolName": "Alt Pool",
+		"url": "https://altpool.pro/",
+		"searchStrings": [
+		  "t1LPKVZh7aVJuXhSJUM4atuVSMYVjQJH7Yz"
+		]
 	},
 	{
 	  "poolName": "XBTMoon",
