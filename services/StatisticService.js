@@ -1203,13 +1203,13 @@ StatisticService.prototype.getPoolsLastHour = function(nextCb) {
 
 };
 StatisticService.prototype.getBlockReward = function(height, callback) {
-  var halvings = Math.floor(height / 2100000);
+  var halvings = Math.floor(height / 657850);
   // Force block reward to zero when right shift is undefined.
   if (halvings >= 64) {
     return 0;
   }
 
-  // Subsidy is cut in half every 2,100,000 blocks which will occur approximately every 4 years.
+  // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
   var subsidy = new BN(150 * 1e8);
   
     // Mining slow start
@@ -1276,7 +1276,7 @@ StatisticService.prototype.getPoolInfo = function(paddress) {
 StatisticService.prototype.getTotalSupply  = function() {
     var blockHeight = this.node.services.bitcoind.height;
 
-    var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
+    var supply = (new BigNumber(12582500)).plus((blockHeight) * 150); //dev fund, slow start 12582500 = 312500 + 13020000 - 750000
 
     return supply;
 };
