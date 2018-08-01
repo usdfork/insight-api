@@ -559,10 +559,9 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
                     poolData: {
                         pool: []
                     },
-										netHash: {
+                    netHash: {
                         sum: '0',
-												count: '0'
-										},
+                        count: '0'},
                     date: date
                 };
 
@@ -1277,7 +1276,7 @@ StatisticService.prototype.getPoolInfo = function(paddress) {
 StatisticService.prototype.getTotalSupply  = function() {
     var blockHeight = this.node.services.bitcoind.height;
 
-    var supply = ((new BigNumber(0)).plus((blockHeight - 5000) * 150) + 312500 + 13020000);
+    var supply = (new BigNumber(0)).plus((blockHeight) * 5000);
 
     return supply;
 };
