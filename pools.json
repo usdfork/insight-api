@@ -103,5 +103,12 @@
 	  "searchStrings": [
 		"althashers"
 	  ]
-	}
+	},
+	{
+	  "poolName": "EquiGems!",
+	   "url": "https://equigems.online",
+	   "searchStrings": [
+	   "t1asFDxJpXgc5UyAsXVxEzsiJAdREP6YLh4"
+	  ]
+       }
   ]
