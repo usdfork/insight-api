@@ -18,7 +18,7 @@ var _ = require('lodash');
  * @constructor
  */
 function StatisticService(options) {
-	var self = this;
+    var self = this;
     this.node = options.node;
     this.statisticDayRepository = options.statisticDayRepository;
 
@@ -32,15 +32,15 @@ function StatisticService(options) {
     this.blocksByHeight = LRU(999999);
     this.feeByHeight = LRU(999999);
     this.outputsByHeight = LRU(999999);
-	  this.difficultyByHeight = LRU(999999);
+    this.difficultyByHeight = LRU(999999);
     this.minedByByHeight = LRU(999999);
-		this.netHashByHeight = LRU(999999);
+    this.netHashByHeight = LRU(999999);
 
-		/**
-		 * 1h Cache
-		 */
-		this.minedByByHeight1h = LRU(999999);
-		this.blocksByHeight1h = LRU(999999);
+    /**
+     * 1h Cache
+     */
+    this.minedByByHeight1h = LRU(999999);
+    this.blocksByHeight1h = LRU(999999);
 
 
 
@@ -56,20 +56,20 @@ function StatisticService(options) {
      *
      * @type {Common}
      */
-    this.common = new Common({log: this.node.log});
+    this.common = new Common({ log: this.node.log });
 
     this.lastTipHeight = 0;
     this.lastTipInProcess = false;
     this.lastTipTimeout = false;
 
     this.poolStrings = {};
-    pools.forEach(function(pool) {
-      pool.searchStrings.forEach(function(s) {
-        self.poolStrings[s] = {
-          poolName: pool.poolName,
-          url: pool.url
-        };
-      });
+    pools.forEach(function (pool) {
+        pool.searchStrings.forEach(function (s) {
+            self.poolStrings[s] = {
+                poolName: pool.poolName,
+                url: pool.url
+            };
+        });
     });
 
 }
@@ -87,7 +87,7 @@ StatisticService.prototype.start = function (callback) {
         height = self.node.services.bitcoind.height;
 
     return async.waterfall([function (callback) {
-        return self.lastBlockRepository.setLastBlockType(STATISTIC_TYPE, 0, function(err) {
+        return self.lastBlockRepository.setLastBlockType(STATISTIC_TYPE, 0, function (err) {
 
             if (err) {
 
@@ -102,7 +102,7 @@ StatisticService.prototype.start = function (callback) {
 
         });
     }, function (callback) {
-        return self.lastBlockRepository.getLastBlockByType(STATISTIC_TYPE, function(err, existingType) {
+        return self.lastBlockRepository.getLastBlockByType(STATISTIC_TYPE, function (err, existingType) {
 
             if (err) {
 
@@ -161,14 +161,14 @@ StatisticService.prototype.process24hBlock = function (data, next) {
         subsidy = data.subsidy,
         fee = data.fee,
         totalOutputs = data.totalOutputs,
-		    difficulty = data.blockJson.difficulty,
+        difficulty = data.blockJson.difficulty,
         minedBy = data.minedBy,
-				netHash = data.netHash,
+        netHash = data.netHash,
         currentDate = new Date(),
-				currentDateHour = new Date();
+        currentDateHour = new Date();
 
     currentDate.setDate(currentDate.getDate() - 1);
-		currentDateHour.setHours(currentDateHour.getHours() - 1);
+    currentDateHour.setHours(currentDateHour.getHours() - 1);
 
     var minTimestamp = currentDate.getTime() / 1000,
         maxAge = (block.time - minTimestamp) * 1000;
@@ -178,16 +178,16 @@ StatisticService.prototype.process24hBlock = function (data, next) {
         self.subsidyByBlockHeight.set(block.height, subsidy, maxAge);
         self.feeByHeight.set(block.height, fee, maxAge);
         self.outputsByHeight.set(block.height, totalOutputs, maxAge);
-		    self.difficultyByHeight.set(block.height, difficulty, maxAge);
+        self.difficultyByHeight.set(block.height, difficulty, maxAge);
         self.minedByByHeight.set(block.height, minedBy, maxAge);
-				self.netHashByHeight.set(block.height, netHash, maxAge);
+        self.netHashByHeight.set(block.height, netHash, maxAge);
     }
-		var minTimestampHour = currentDateHour.getTime() / 1000,
+    var minTimestampHour = currentDateHour.getTime() / 1000,
         maxAgeHour = (block.time - minTimestampHour) * 1000;
-		if (maxAgeHour > 0) {
-		    self.blocksByHeight1h.set(block.height, block, maxAgeHour);
-		    self.minedByByHeight1h.set(block.height, minedBy, maxAgeHour);
-		}
+    if (maxAgeHour > 0) {
+        self.blocksByHeight1h.set(block.height, block, maxAgeHour);
+        self.minedByByHeight1h.set(block.height, minedBy, maxAgeHour);
+    }
     return next();
 
 };
@@ -206,7 +206,7 @@ StatisticService.prototype.processPrevBlocks = function (height, next) {
         };
 
     return async.doDuring(
-        function(callback) {
+        function (callback) {
 
             return self.node.getJsonBlock(height, function (err, blockJson) {
 
@@ -220,7 +220,7 @@ StatisticService.prototype.processPrevBlocks = function (height, next) {
             });
 
         },
-        function(callback) {
+        function (callback) {
 
             var block = dataFlow.blockJson,
                 currentDate = new Date();
@@ -264,16 +264,16 @@ StatisticService.prototype.processPrevBlocks = function (height, next) {
  * @return {*}
  * @private
  */
-StatisticService.prototype._getLastBlocks = function(height, next) {
+StatisticService.prototype._getLastBlocks = function (height, next) {
 
-	var self = this,
-    	blocks = [];
+    var self = this,
+        blocks = [];
 
     for (var i = self.lastCheckedBlock + 1; i <= height; i++) {
-            blocks.push(i);
-        }
+        blocks.push(i);
+    }
 
-	     return async.eachSeries(blocks, function (blockHeight, callback) {
+    return async.eachSeries(blocks, function (blockHeight, callback) {
 
         return self.processBlock(blockHeight, function (err) {
             return callback(err);
@@ -299,158 +299,158 @@ StatisticService.prototype._getBlockInfo = function (blockHeight, next) {
             subsidy: null,
             block: null,
             blockJson: null,
-			      fee: 0,
-			      totalOutputs: 0,
+            fee: 0,
+            totalOutputs: 0,
             minedBy: null,
-						netHash: null,
-						transaction: null
-		};
+            netHash: null,
+            transaction: null
+        };
 
-		return async.waterfall([function (callback) {
+    return async.waterfall([function (callback) {
         return self.node.getJsonBlock(blockHeight, function (err, blockJson) {
-                if((err && err.code === -5) || (err && err.code === -8)) {
-                    return callback(err);
-                } else if(err) {
-                    return callback(err);
-                }
-
-                dataFlow.blockJson = blockJson;
-
-                return callback();
-          });
-        }, function (callback) {
-
-            /**
-			         * Block
-             */
-            return self.node.getBlock(blockHeight, function(err, block) {
-
-                if((err && err.code === -5) || (err && err.code === -8)) {
-                    return callback(err);
-                } else if(err) {
-                    return callback(err);
-                }
-
-                dataFlow.block = block;
-
-                return callback();
-
-           });
-		}, function (callback) {
-
-            /**
-			 * Subsidy
-             */
-             return self.getBlockReward(blockHeight, function (err, result) {
-                 dataFlow.subsidy = result;
-                 return callback();
-			});
-
-		}, function (callback) {
-
-            /**
-			       * Fee
-             */
-
-
-
-             var transaction0 = dataFlow.block.transactions[0],
-                 currentVoutsAmount = 0;
-
-                 transaction0.outputs.forEach(function (output) {
-                       currentVoutsAmount += output.satoshis;
-                 });
-
-                 if ((currentVoutsAmount - dataFlow.subsidy) > 0) {
-                 dataFlow.fee = currentVoutsAmount - dataFlow.subsidy;
-                 }
-
-		       return callback();
-
-		}, function (callback) {
-
-            /**
-			 * Total outputs
-             */
-
-			var trxsExcept = [];
-
-            trxsExcept.push(0);
-
-            dataFlow.block.transactions.forEach(function (transaction, idx) {
-                if (trxsExcept.indexOf(idx) === -1) {
-                    transaction.outputs.forEach(function (output) {
-						dataFlow.totalOutputs += output.satoshis;
-                    });
-				        }
-			      });
-
-            return callback();
-
-		}, function (callback) {
-
-		          /**
-			 * networkhashps
-		           */
-
-			return self.node.getNetworkHash(blockHeight, function(err, hashps) {
-
-				if((err && err.code === -5) || (err && err.code === -8)) {
-						return callback(err);
-				} else if(err) {
-						return callback(err);
-				}
-
-				dataFlow.netHash = hashps;
-
-				return callback();
-
-	 		});
-
-		}, function (callback) {
-
-            if (blockHeight === 0) {
-                return callback();
+            if ((err && err.code === -5) || (err && err.code === -8)) {
+                return callback(err);
+            } else if (err) {
+                return callback(err);
             }
 
-            var txHash;
+            dataFlow.blockJson = blockJson;
 
+            return callback();
+        });
+    }, function (callback) {
 
-            txHash = dataFlow.block.transactions[0].hash;
+        /**
+                 * Block
+         */
+        return self.node.getBlock(blockHeight, function (err, block) {
 
+            if ((err && err.code === -5) || (err && err.code === -8)) {
+                return callback(err);
+            } else if (err) {
+                return callback(err);
+            }
 
-            return self.getDetailedTransaction(txHash, function (err, trx) {
-
-            if (err) {
-                    return callback(err);
-                }
-
-                dataFlow.transaction = trx;
-
-                return callback();
-
-            });
-        }, function (callback) {
-
-            /**
-			 * minedBy
-             */
-
-
-             var reward = self.getBlockRewardr(blockHeight);
-             dataFlow.transaction.outputs.forEach(function (output) {
-                 if (output.satoshis > (reward * 0.8)) {
-                     dataFlow.minedBy = output.address;
-				 }
-             });
+            dataFlow.block = block;
 
             return callback();
 
-		}], function (err) {
+        });
+    }, function (callback) {
 
-			if (err) {
+        /**
+         * Subsidy
+         */
+        return self.getBlockReward(blockHeight, function (err, result) {
+            dataFlow.subsidy = result;
+            return callback();
+        });
+
+    }, function (callback) {
+
+        /**
+               * Fee
+         */
+
+
+
+        var transaction0 = dataFlow.block.transactions[0],
+            currentVoutsAmount = 0;
+
+        transaction0.outputs.forEach(function (output) {
+            currentVoutsAmount += output.satoshis;
+        });
+
+        if ((currentVoutsAmount - dataFlow.subsidy) > 0) {
+            dataFlow.fee = currentVoutsAmount - dataFlow.subsidy;
+        }
+
+        return callback();
+
+    }, function (callback) {
+
+        /**
+         * Total outputs
+         */
+
+        var trxsExcept = [];
+
+        trxsExcept.push(0);
+
+        dataFlow.block.transactions.forEach(function (transaction, idx) {
+            if (trxsExcept.indexOf(idx) === -1) {
+                transaction.outputs.forEach(function (output) {
+                    dataFlow.totalOutputs += output.satoshis;
+                });
+            }
+        });
+
+        return callback();
+
+    }, function (callback) {
+
+        /**
+   * networkhashps
+         */
+
+        return self.node.getNetworkHash(blockHeight, function (err, hashps) {
+
+            if ((err && err.code === -5) || (err && err.code === -8)) {
+                return callback(err);
+            } else if (err) {
+                return callback(err);
+            }
+
+            dataFlow.netHash = hashps;
+
+            return callback();
+
+        });
+
+    }, function (callback) {
+
+        if (blockHeight === 0) {
+            return callback();
+        }
+
+        var txHash;
+
+
+        txHash = dataFlow.block.transactions[0].hash;
+
+
+        return self.getDetailedTransaction(txHash, function (err, trx) {
+
+            if (err) {
+                return callback(err);
+            }
+
+            dataFlow.transaction = trx;
+
+            return callback();
+
+        });
+    }, function (callback) {
+
+        /**
+         * minedBy
+         */
+
+
+        var reward = self.getBlockRewardr(blockHeight);
+        dataFlow.transaction.outputs.forEach(function (output) {
+            if (output.satoshis > (reward * 0.8)) {
+                dataFlow.minedBy = output.address;
+            }
+        });
+
+        return callback();
+
+    }], function (err) {
+
+        if (err) {
             return next(err);
-			}
+        }
 
         return next(err, dataFlow);
 
@@ -474,26 +474,26 @@ StatisticService.prototype.processBlock = function (blockHeight, next) {
             return next(err);
         }
 
-            if (self.knownBlocks.get(blockHeight)) {
-                return callback();
-            }
+        if (self.knownBlocks.get(blockHeight)) {
+            return callback();
+        }
 
-            self.knownBlocks.set(blockHeight, true);
+        self.knownBlocks.set(blockHeight, true);
 
-            self.lastCheckedBlock = blockHeight;
+        self.lastCheckedBlock = blockHeight;
 
         var block = data.blockJson,
             date = new Date(block.time * 1000),
-                formattedDate = self.formatTimestamp(date);
+            formattedDate = self.formatTimestamp(date);
 
         return async.waterfall([function (callback) {
             return self.lastBlockRepository.updateOrAddLastBlock(block.height, STATISTIC_TYPE, function (err) {
                 return callback(err);
-		        });
+            });
         }, function (callback) {
             return self.updateOrCreateDay(formattedDate, data, function (err) {
                 return callback(err);
-	     });
+            });
         }, function (callback) {
             return self.process24hBlock(data, function (err) {
                 return callback(err);
@@ -521,11 +521,11 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
         fee = data.fee,
         totalOutputs = data.totalOutputs,
         mined = data.minedBy,
-				netHash = data.netHash,
+        netHash = data.netHash,
         dataFlow = {
-        day: null,
-        formattedDay: null
-    };
+            day: null,
+            formattedDay: null
+        };
 
     return async.waterfall([function (callback) {
         return self.statisticDayRepository.getDay(new Date(date), function (err, day) {
@@ -561,7 +561,8 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
                     },
                     netHash: {
                         sum: '0',
-                        count: '0'},
+                        count: '0'
+                    },
                     date: date
                 };
 
@@ -587,24 +588,24 @@ StatisticService.prototype.updateOrCreateDay = function (date, data, next) {
         dayBN.totalOutputVolume.sum = dayBN.totalOutputVolume.sum.plus(totalOutputs.toString());
 
 
-       dayBN.difficulty.sum.push(block.difficulty.toString());
+        dayBN.difficulty.sum.push(block.difficulty.toString());
 
-			 dayBN.netHash.sum = dayBN.netHash.sum.plus(netHash.toString());
-       dayBN.netHash.count = dayBN.netHash.count.plus(1);
-
-
-	   var objIndex = dayBN.poolData.pool.findIndex((obj => obj.minedby == mined));
-
-       if (objIndex == -1) {
-          dayBN.poolData.pool.push({minedby: mined, count: 1});
-
-       } else {
-		  dayBN.poolData.pool[objIndex].count += 1;
-
-       }
+        dayBN.netHash.sum = dayBN.netHash.sum.plus(netHash.toString());
+        dayBN.netHash.count = dayBN.netHash.count.plus(1);
 
 
-       dayBN.supply.sum = SupplyHelper.getTotalSupplyByHeight(block.height).mul(1e8);
+        var objIndex = dayBN.poolData.pool.findIndex((obj => obj.minedby == mined));
+
+        if (objIndex == -1) {
+            dayBN.poolData.pool.push({ minedby: mined, count: 1 });
+
+        } else {
+            dayBN.poolData.pool[objIndex].count += 1;
+
+        }
+
+
+        dayBN.supply.sum = SupplyHelper.getTotalSupplyByHeight(block.height).mul(1e8);
 
 
         return self.statisticDayRepository.createOrUpdateDay(new Date(date), dayBN, function (err) {
@@ -647,10 +648,10 @@ StatisticService.prototype._toDayBN = function (day) {
         poolData: {
             pool: day.poolData.pool
         },
-				netHash: {
-						sum: new BigNumber(day.netHash.sum),
-						count: new BigNumber(day.netHash.count)
-				},
+        netHash: {
+            sum: new BigNumber(day.netHash.sum),
+            count: new BigNumber(day.netHash.count)
+        },
         date: day.date
     };
 };
@@ -660,7 +661,7 @@ StatisticService.prototype._toDayBN = function (day) {
  * @param {Date} date
  * @returns {string} yyyy-mm-dd format
  */
-StatisticService.prototype.formatTimestamp = function(date) {
+StatisticService.prototype.formatTimestamp = function (date) {
     var yyyy = date.getUTCFullYear().toString();
     var mm = (date.getUTCMonth() + 1).toString(); // getMonth() is zero-based
     var dd = date.getUTCDate().toString();
@@ -674,7 +675,7 @@ StatisticService.prototype.formatTimestamp = function(date) {
  * @returns {boolean}
  * @private
  */
-StatisticService.prototype._rapidProtectedUpdateTip = function(height) {
+StatisticService.prototype._rapidProtectedUpdateTip = function (height) {
 
     var self = this;
 
@@ -688,7 +689,7 @@ StatisticService.prototype._rapidProtectedUpdateTip = function(height) {
 
     this.lastTipInProcess = true;
 
-    self.common.log.info('[STATISTICS Service] start upd from ', self.lastCheckedBlock + 1 , ' to ', height);
+    self.common.log.info('[STATISTICS Service] start upd from ', self.lastCheckedBlock + 1, ' to ', height);
 
     return this._getLastBlocks(height, function (err) {
 
@@ -698,7 +699,7 @@ StatisticService.prototype._rapidProtectedUpdateTip = function(height) {
             return false;
         }
 
-        self.emit('updated', {height: height});
+        self.emit('updated', { height: height });
 
         self.common.log.info('[STATISTICS Service] updated to ', height);
 
@@ -764,11 +765,11 @@ StatisticService.prototype.getDifficulty = function (days, next) {
 
             diffMode = self.mode(day.difficulty.sum);
 
-            if (diffMode.length-1 > 1) {
-    			       sumDiff = diffMode[diffMode.length-1].toString();
-    		    } else {
-    			       sumDiff = diffMode[0].toString();
-    		    }
+            if (diffMode.length - 1 > 1) {
+                sumDiff = diffMode[diffMode.length - 1].toString();
+            } else {
+                sumDiff = diffMode[0].toString();
+            }
 
             results.push({
                 date: self.formatTimestamp(day.date),
@@ -819,39 +820,39 @@ StatisticService.prototype.getPools = function (date, next) {
         if (err) {
             return next(err);
         }
-		var results = null;
-		if (stats) {
-		var totalBlocks = parseInt(stats.totalBlocks.count);
-		var poolsarr = JSON.parse(JSON.stringify(stats.poolData.pool));
-		poolsarr.forEach(function(obj) {
-			var name;
-			name = self.getPoolInfo(obj.minedby);
-			if (_.isEmpty(name)) {
-				obj.address = obj.minedby;
-				obj.poolName = "Unknown",
-				obj.url = "";
- 		    } else {
-			 	obj.address = obj.minedby;
-				obj.poolName = name.poolName;
-				obj.url = name.url;
-			}
-			delete obj.minedby;
-			var blocksWon = parseInt(obj.count);
-			var tempnum = blocksWon / totalBlocks * 100;
-			obj.blocks_found = obj.count;
-			obj.percent_total = tempnum.toFixed(2);
-			delete obj.count;
+        var results = null;
+        if (stats) {
+            var totalBlocks = parseInt(stats.totalBlocks.count);
+            var poolsarr = JSON.parse(JSON.stringify(stats.poolData.pool));
+            poolsarr.forEach(function (obj) {
+                var name;
+                name = self.getPoolInfo(obj.minedby);
+                if (_.isEmpty(name)) {
+                    obj.address = obj.minedby;
+                    obj.poolName = "Unknown",
+                        obj.url = "";
+                } else {
+                    obj.address = obj.minedby;
+                    obj.poolName = name.poolName;
+                    obj.url = name.url;
+                }
+                delete obj.minedby;
+                var blocksWon = parseInt(obj.count);
+                var tempnum = blocksWon / totalBlocks * 100;
+                obj.blocks_found = obj.count;
+                obj.percent_total = tempnum.toFixed(2);
+                delete obj.count;
 
-		});
-        poolsarr.sort(function(a,b){
-			return b.percent_total - a.percent_total;
-		});
-		results = {
+            });
+            poolsarr.sort(function (a, b) {
+                return b.percent_total - a.percent_total;
+            });
+            results = {
                 date: self.formatTimestamp(stats.date),
-				block_count: totalBlocks,
+                block_count: totalBlocks,
                 Pools: poolsarr
             };
-		}
+        }
 
 
         return next(err, results);
@@ -912,7 +913,7 @@ StatisticService.prototype.getOutputs = function (days, next) {
 
         stats.forEach(function (day) {
 
-			var outputBN = new BigNumber(day.totalOutputVolume.sum);
+            var outputBN = new BigNumber(day.totalOutputVolume.sum);
 
             results.push({
                 date: self.formatTimestamp(day.date),
@@ -999,7 +1000,7 @@ StatisticService.prototype.getFees = function (days, next) {
  * @param {Function} nextCb
  * @return {*}
  */
-StatisticService.prototype.getTotal = function(nextCb) {
+StatisticService.prototype.getTotal = function (nextCb) {
 
     var self = this,
         initHeight = self.lastCheckedBlock,
@@ -1014,17 +1015,17 @@ StatisticService.prototype.getTotal = function(nextCb) {
         sumDifficulty = [],
         totalOutputsAmount = 0,
         dayPoolData = [],
-				sumNetHash = 0,
-				countNetHash = 0;
+        sumNetHash = 0,
+        countNetHash = 0;
 
-    while(next && height > 0) {
+    while (next && height > 0) {
 
         var currentElement = self.blocksByHeight.get(height),
             subsidy = self.subsidyByBlockHeight.get(height),
             outputAmount = self.outputsByHeight.get(height),
-			      difficulty = self.difficultyByHeight.get(height),
+            difficulty = self.difficultyByHeight.get(height),
             mined = self.minedByByHeight.get(height),
-						netHash = self.netHashByHeight.get(height);
+            netHash = self.netHashByHeight.get(height);
         if (currentElement) {
 
             var nextElement = self.blocksByHeight.get(height + 1),
@@ -1040,7 +1041,7 @@ StatisticService.prototype.getTotal = function(nextCb) {
 
 
             if (difficulty) {
-				        difficulty = JSON.parse(JSON.stringify(difficulty));
+                difficulty = JSON.parse(JSON.stringify(difficulty));
                 sumDifficulty.push(difficulty.toString());
             }
 
@@ -1052,24 +1053,24 @@ StatisticService.prototype.getTotal = function(nextCb) {
                 allFee += fee;
             }
 
-						if (netHash) {
-							sumNetHash += netHash;
-							countNetHash++;
+            if (netHash) {
+                sumNetHash += netHash;
+                countNetHash++;
             }
 
-						if (outputAmount) {
+            if (outputAmount) {
                 totalOutputsAmount += outputAmount;
             }
 
 
             if (mined) {
-              var objIndex = dayPoolData.findIndex((obj => obj.minedby == mined));
+                var objIndex = dayPoolData.findIndex((obj => obj.minedby == mined));
 
                 if (objIndex == -1) {
-                   dayPoolData.push({minedby: mined, count: 1});
+                    dayPoolData.push({ minedby: mined, count: 1 });
 
                 } else {
-         		       dayPoolData[objIndex].count += 1;
+                    dayPoolData[objIndex].count += 1;
 
                 }
 
@@ -1087,52 +1088,52 @@ StatisticService.prototype.getTotal = function(nextCb) {
     var totDiffMode = [];
     totDiffMode = self.mode(sumDifficulty);
 
-    if (totDiffMode.length-1 > 1) {
-         totDiff = totDiffMode[totDiffMode.length-1].toString();
+    if (totDiffMode.length - 1 > 1) {
+        totDiff = totDiffMode[totDiffMode.length - 1].toString();
     } else {
-         totDiff = totDiffMode[0];
+        totDiff = totDiffMode[0];
     }
-		var poolsArr = JSON.parse(JSON.stringify(dayPoolData));
-		poolsArr.forEach(function(obj) {
-			var name;
-			name = self.getPoolInfo(obj.minedby);
-			if (_.isEmpty(name)) {
-				obj.address = obj.minedby;
-				obj.poolName = "Unknown",
-				obj.url = "";
-			} else {
-				obj.address = obj.minedby;
-				obj.poolName = name.poolName;
-				obj.url = name.url;
-			}
-			delete obj.minedby;
-			var blocksWon = parseInt(obj.count);
-			var tempNum = blocksWon / minedBlocks * 100;
-			obj.blocks_found = obj.count;
-			obj.percent_total = tempNum.toFixed(2);
-			delete obj.count;
+    var poolsArr = JSON.parse(JSON.stringify(dayPoolData));
+    poolsArr.forEach(function (obj) {
+        var name;
+        name = self.getPoolInfo(obj.minedby);
+        if (_.isEmpty(name)) {
+            obj.address = obj.minedby;
+            obj.poolName = "Unknown",
+                obj.url = "";
+        } else {
+            obj.address = obj.minedby;
+            obj.poolName = name.poolName;
+            obj.url = name.url;
+        }
+        delete obj.minedby;
+        var blocksWon = parseInt(obj.count);
+        var tempNum = blocksWon / minedBlocks * 100;
+        obj.blocks_found = obj.count;
+        obj.percent_total = tempNum.toFixed(2);
+        delete obj.count;
 
-		});
-		poolsArr.sort(function(a,b){
-			return b.percent_total - a.percent_total;
-		});
+    });
+    poolsArr.sort(function (a, b) {
+        return b.percent_total - a.percent_total;
+    });
     var result = {
-            n_blocks_mined: minedBlocks,
-            time_between_blocks: sumBetweenTime && countBetweenTime ? sumBetweenTime / countBetweenTime : 0,
-            mined_currency_amount: minedCurrencyAmount,
-            transaction_fees: allFee,
-            number_of_transactions: numTransactions,
-            outputs_volume: totalOutputsAmount,
-            difficulty: totDiff,
-						network_hash_ps: sumNetHash && countNetHash ? sumNetHash / countNetHash : 0,
-            blocks_by_pool: poolsArr
-        };
+        n_blocks_mined: minedBlocks,
+        time_between_blocks: sumBetweenTime && countBetweenTime ? sumBetweenTime / countBetweenTime : 0,
+        mined_currency_amount: minedCurrencyAmount,
+        transaction_fees: allFee,
+        number_of_transactions: numTransactions,
+        outputs_volume: totalOutputsAmount,
+        difficulty: totDiff,
+        network_hash_ps: sumNetHash && countNetHash ? sumNetHash / countNetHash : 0,
+        blocks_by_pool: poolsArr
+    };
 
     return nextCb(null, result);
 
 };
 
-StatisticService.prototype.getPoolsLastHour = function(nextCb) {
+StatisticService.prototype.getPoolsLastHour = function (nextCb) {
 
     var self = this,
         initHeight = self.lastCheckedBlock,
@@ -1141,7 +1142,7 @@ StatisticService.prototype.getPoolsLastHour = function(nextCb) {
         minedBlocks = 0,
         dayPoolData = [];
 
-    while(next && height > 0) {
+    while (next && height > 0) {
 
         var currentElement = self.blocksByHeight1h.get(height),
             mined = self.minedByByHeight1h.get(height);
@@ -1150,13 +1151,13 @@ StatisticService.prototype.getPoolsLastHour = function(nextCb) {
             minedBlocks++;
 
             if (mined) {
-              var objIndex = dayPoolData.findIndex((obj => obj.minedby == mined));
+                var objIndex = dayPoolData.findIndex((obj => obj.minedby == mined));
 
                 if (objIndex == -1) {
-                   dayPoolData.push({minedby: mined, count: 1});
+                    dayPoolData.push({ minedby: mined, count: 1 });
 
                 } else {
-         		       dayPoolData[objIndex].count += 1;
+                    dayPoolData[objIndex].count += 1;
 
                 }
 
@@ -1170,148 +1171,146 @@ StatisticService.prototype.getPoolsLastHour = function(nextCb) {
 
     }
 
-		var poolsArr = JSON.parse(JSON.stringify(dayPoolData));
-		poolsArr.forEach(function(obj) {
-			var name;
-			name = self.getPoolInfo(obj.minedby);
-			if (_.isEmpty(name)) {
-				obj.address = obj.minedby;
-				obj.poolName = "Unknown",
-				obj.url = "";
-			} else {
-				obj.address = obj.minedby;
-				obj.poolName = name.poolName;
-				obj.url = name.url;
-			}
-			delete obj.minedby;
-			var blocksWon = parseInt(obj.count);
-			var tempNum = blocksWon / minedBlocks * 100;
-			obj.blocks_found = obj.count;
-			obj.percent_total = tempNum.toFixed(2);
-			delete obj.count;
+    var poolsArr = JSON.parse(JSON.stringify(dayPoolData));
+    poolsArr.forEach(function (obj) {
+        var name;
+        name = self.getPoolInfo(obj.minedby);
+        if (_.isEmpty(name)) {
+            obj.address = obj.minedby;
+            obj.poolName = "Unknown",
+                obj.url = "";
+        } else {
+            obj.address = obj.minedby;
+            obj.poolName = name.poolName;
+            obj.url = name.url;
+        }
+        delete obj.minedby;
+        var blocksWon = parseInt(obj.count);
+        var tempNum = blocksWon / minedBlocks * 100;
+        obj.blocks_found = obj.count;
+        obj.percent_total = tempNum.toFixed(2);
+        delete obj.count;
 
-		});
-		poolsArr.sort(function(a,b){
-			return b.percent_total - a.percent_total;
-		});
+    });
+    poolsArr.sort(function (a, b) {
+        return b.percent_total - a.percent_total;
+    });
     var result = {
-            n_blocks_mined: minedBlocks,
-            blocks_by_pool: poolsArr
-        };
+        n_blocks_mined: minedBlocks,
+        blocks_by_pool: poolsArr
+    };
 
     return nextCb(null, result);
 
 };
-StatisticService.prototype.getBlockReward = function(height, callback) {
-  var halvings = Math.floor(height / 657850);
-  // Force block reward to zero when right shift is undefined.
-  if (halvings >= 64) {
-    return 0;
-  }
-
-  // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
-  var subsidy = new BN(150 * 1e8);
-  
-    // Mining slow start
-  // The subsidy is ramped up linearly, skipping the middle payout of
-  // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
-  if (height < (5000 / 2)) {
-    subsidy /= 5000;
-    subsidy *= height;
-    return subsidy;
-  } else if (height < 5000) {
-    subsidy /= 5000;
-    subsidy *= (height+1);
-    return subsidy;
-  }
-  subsidy = subsidy.shrn(halvings);
-  var sub;
-  sub = parseInt(subsidy.toString(10));
-  callback(null, sub);
-};
-
-StatisticService.prototype.getBlockRewardr = function(height) {
-  var halvings = Math.floor(height / 657850);
-  // Force block reward to zero when right shift is undefined.
-  if (halvings >= 64) {
-    return 0;
-  }
-
-  // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
-  var subsidy = new BN(150 * 1e8);
-  
-    // Mining slow start
-  // The subsidy is ramped up linearly, skipping the middle payout of
-  // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
-  if (height < (5000 / 2)) {
-    subsidy /= 5000;
-    subsidy *= height;
-    return subsidy;
-  } else if (height < 5000) {
-    subsidy /= 5000;
-    subsidy *= (height+1);
-    return subsidy;
-  }
-  subsidy = subsidy.shrn(halvings);
-
-  return parseInt(subsidy.toString(10));
-};
-
-StatisticService.prototype.getPoolInfo = function(paddress) {
-  if (paddress) {
-    for(var k in this.poolStrings) {
-      if (paddress.toString().match(k)) {
-        this.poolStrings[k].address = paddress;
-	    return this.poolStrings[k];
-      }
+StatisticService.prototype.getBlockReward = function (height, callback) {
+    var halvings = Math.floor(height / 657850);
+    // Force block reward to zero when right shift is undefined.
+    if (halvings >= 64) {
+        return 0;
     }
-  }
-  return {};
+
+    // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
+    var subsidy = new BN(150 * 1e8);
+
+    // Mining slow start
+    // The subsidy is ramped up linearly, skipping the middle payout of
+    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
+    if (height < (5000 / 2)) {
+        subsidy /= 5000;
+        subsidy *= height;
+        return subsidy;
+    } else if (height < 5000) {
+        subsidy /= 5000;
+        subsidy *= (height + 1);
+        return subsidy;
+    }
+    subsidy = subsidy.shrn(halvings);
+    var sub;
+    sub = parseInt(subsidy.toString(10));
+    callback(null, sub);
+};
+
+StatisticService.prototype.getBlockRewardr = function (height) {
+    var halvings = Math.floor(height / 657850);
+    // Force block reward to zero when right shift is undefined.
+    if (halvings >= 64) {
+        return 0;
+    }
+
+    // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
+    var subsidy = new BN(150 * 1e8);
+
+    // Mining slow start
+    // The subsidy is ramped up linearly, skipping the middle payout of
+    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
+    if (height < (5000 / 2)) {
+        subsidy /= 5000;
+        subsidy *= height;
+        return subsidy;
+    } else if (height < 5000) {
+        subsidy /= 5000;
+        subsidy *= (height + 1);
+        return subsidy;
+    }
+    subsidy = subsidy.shrn(halvings);
+
+    return parseInt(subsidy.toString(10));
+};
+
+StatisticService.prototype.getPoolInfo = function (paddress) {
+    for (var k in this.poolStrings) {
+        if (paddress.toString().match(k)) {
+            this.poolStrings[k].address = paddress;
+            return this.poolStrings[k];
+        }
+    }
+    return {};
 };
 
 /**
  *
  * @return {BigNumber} supply - BigNumber representation of total supply
  */
-StatisticService.prototype.getTotalSupply  = function() {
+StatisticService.prototype.getTotalSupply = function () {
     var blockHeight = this.node.services.bitcoind.height;
 
     var supply = (new BigNumber(12582500)).plus((blockHeight) * 150); //dev fund, slow start 12582500 = 312500 + 13020000 - 750000
 
     return supply;
 };
-StatisticService.prototype.mode = function(array) {
-		if (!array.length) return [];
-		var modeMap = {},
-			maxCount = 0,
-			modes = [];
+StatisticService.prototype.mode = function (array) {
+    if (!array.length) return [];
+    var modeMap = {},
+        maxCount = 0,
+        modes = [];
 
-		array.forEach(function(val) {
-			if (!modeMap[val]) modeMap[val] = 1;
-			else modeMap[val]++;
+    array.forEach(function (val) {
+        if (!modeMap[val]) modeMap[val] = 1;
+        else modeMap[val]++;
 
-			if (modeMap[val] > maxCount) {
-				modes = [val];
-				maxCount = modeMap[val];
-			}
-			else if (modeMap[val] === maxCount) {
-				modes.push(val);
-				maxCount = modeMap[val];
-			}
-		});
-		return modes;
+        if (modeMap[val] > maxCount) {
+            modes = [val];
+            maxCount = modeMap[val];
+        }
+        else if (modeMap[val] === maxCount) {
+            modes.push(val);
+            maxCount = modeMap[val];
+        }
+    });
+    return modes;
 };
-StatisticService.prototype.getDetailedTransaction = function(txid, callback) {
+StatisticService.prototype.getDetailedTransaction = function (txid, callback) {
 
     var self = this;
     var tx = null;
-    return async.waterfall([function(callback) {
+    return async.waterfall([function (callback) {
 
-        return self.node.getDetailedTransaction(txid, function(err, transaction) {
+        return self.node.getDetailedTransaction(txid, function (err, transaction) {
             return callback(err, transaction);
         });
 
-    }], function(err, transaction) {
+    }], function (err, transaction) {
         return callback(err, transaction);
     });
 
