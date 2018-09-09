@@ -1205,7 +1205,12 @@ StatisticService.prototype.getPoolsLastHour = function (nextCb) {
 };
 StatisticService.prototype.getBlockReward = function (height, callback) {
     // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
-    var halvings = Math.floor(height / 657850);
+    var halvings;
+    if (height <= 5000) {
+      halvings = 0
+    } else {
+      halvings = Math.floor((height - (5000)) / 657850);
+    }
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64) {
         return 0;
@@ -1225,7 +1230,12 @@ StatisticService.prototype.getBlockReward = function (height, callback) {
 
 StatisticService.prototype.getBlockRewardr = function (height) {
     // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
-    var halvings = Math.floor(height / 657850);
+    var halvings;
+    if (height <= 5000) {
+      halvings = 0
+    } else {
+      halvings = Math.floor((height - (5000)) / 657850);
+    }
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64) {
         return 0;
