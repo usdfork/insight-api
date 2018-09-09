@@ -1204,54 +1204,37 @@ StatisticService.prototype.getPoolsLastHour = function (nextCb) {
 
 };
 StatisticService.prototype.getBlockReward = function (height, callback) {
+    // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
     var halvings = Math.floor(height / 657850);
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64) {
         return 0;
     }
-
-    // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
-    var subsidy = new BN(150 * 1e8);
-
+    
     // Mining slow start
-    // The subsidy is ramped up linearly, skipping the middle payout of
-    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
-    if (height < (5000 / 2)) {
-        subsidy /= 5000;
-        subsidy *= height;
-        return subsidy;
-    } else if (height < 5000) {
-        subsidy /= 5000;
-        subsidy *= (height + 1);
-        return subsidy;
+    if (height < 5000) {
+        var subsidy = new BN(150 * 1e8 * height / 5000)
+    } else {
+        var subsidy = new BN(150 * 1e8)
     }
     subsidy = subsidy.shrn(halvings);
-    var sub;
-    sub = parseInt(subsidy.toString(10));
+    var sub = parseInt(subsidy.toString(10));
     callback(null, sub);
 };
 
 StatisticService.prototype.getBlockRewardr = function (height) {
+    // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
     var halvings = Math.floor(height / 657850);
     // Force block reward to zero when right shift is undefined.
     if (halvings >= 64) {
         return 0;
     }
 
-    // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
-    var subsidy = new BN(150 * 1e8);
-
     // Mining slow start
-    // The subsidy is ramped up linearly, skipping the middle payout of
-    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
-    if (height < (5000 / 2)) {
-        subsidy /= 5000;
-        subsidy *= height;
-        return subsidy;
-    } else if (height < 5000) {
-        subsidy /= 5000;
-        subsidy *= (height + 1);
-        return subsidy;
+    if (height < 5000) {
+        var subsidy = new BN(150 * 1e8 * height / 5000)
+    } else {
+        var subsidy = new BN(150 * 1e8)
     }
     subsidy = subsidy.shrn(halvings);
 
