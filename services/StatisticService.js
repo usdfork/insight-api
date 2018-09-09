@@ -1218,7 +1218,8 @@ StatisticService.prototype.getBlockReward = function (height, callback) {
         var subsidy = new BN(150 * 1e8)
     }
     subsidy = subsidy.shrn(halvings);
-    var sub = parseInt(subsidy.toString(10));
+    var sub;
+    sub = parseInt(subsidy.toString(10));
     callback(null, sub);
 };
 
