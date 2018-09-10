@@ -1217,11 +1217,22 @@ StatisticService.prototype.getBlockReward = function (height, callback) {
     }
     
     // Mining slow start
-    if (height < 5000) {
-        var subsidy = new BN(150 * 1e8 * height / 5000)
+    // The subsidy is ramped up linearly, skipping the middle payout of
+    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
+    if (height == 0) {
+      var subsidy = new BN(0)
+    } else if (height == 1) {
+      var subsidy = new BN(0)
+    } else if (height == 2) {
+      var subsidy = new BN(13020000 * 1e8)
+    } else if (height < 2500) {
+      var subsidy = new BN(150 * 1e8 * (height - 1) / 5000)
+    } else if (height < 5000) {
+      var subsidy = new BN(150 * 1e8 * height / 5000)
     } else {
-        var subsidy = new BN(150 * 1e8)
+      var subsidy = new BN(150 * 1e8)
     }
+
     subsidy = subsidy.shrn(halvings);
     var sub;
     sub = parseInt(subsidy.toString(10));
@@ -1242,10 +1253,20 @@ StatisticService.prototype.getBlockRewardr = function (height) {
     }
 
     // Mining slow start
-    if (height < 5000) {
-        var subsidy = new BN(150 * 1e8 * height / 5000)
+    // The subsidy is ramped up linearly, skipping the middle payout of
+    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
+    if (height == 0) {
+      var subsidy = new BN(0)
+    } else if (height == 1) {
+      var subsidy = new BN(0)
+    } else if (height == 2) {
+      var subsidy = new BN(13020000 * 1e8)
+    } else if (height < 2500) {
+      var subsidy = new BN(150 * 1e8 * (height - 1) / 5000)
+    } else if (height < 5000) {
+      var subsidy = new BN(150 * 1e8 * height / 5000)
     } else {
-        var subsidy = new BN(150 * 1e8)
+      var subsidy = new BN(150 * 1e8)
     }
     subsidy = subsidy.shrn(halvings);
 
