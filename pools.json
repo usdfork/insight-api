@@ -1,65 +1,79 @@
 [
-	{
-		"poolName": "CloudPools",
-		"url": "http://zel.cloudpools.net/",
-		"searchStrings": [
-			"t1RLgxJn8vfhiYeAaDnSigBzWkSKGsBiaM4"
-		]
-	},
-	{
-		"poolName": "CoinBlockers",
-		"url": "https://zel.coinblockers.com/",
-		"searchStrings": [
-			"t1RBpVZmcwgoMFdThtUrHGEqJVz6BRPExFi"
-		]
-	},
-	{
-		"poolName": "equipool.1ds.us",
-		"url": "https://equipool.1ds.us/getting_started",
-		"searchStrings": [
-			"t1Nf8tSxVhQKiGhQXLp73XdWgX2aDAhMr5F"
-		]
-	},
-	{
-		"poolName": "Windfall mining",
-		"url": "https://www.windfallmining.com/",
-		"searchStrings": [
-			"t1P1A4883Bs9TNNBzuYzbqzmWW6GXN3VZH7"
-		]
-	},
-	{
-		"poolName": "VOIDr",
-		"url": "https://voidr.net/",
-		"searchStrings": [
-			"t1KPD9ymeg7sCzAhrSPQ2BgLDRM2XGYqb3S"
-		]
-	},
-	{
-		"poolName": "Alt Pool",
-		"url": "https://altpool.pro/",
-		"searchStrings": [
-			"t1LPKVZh7aVJuXhSJUM4atuVSMYVjQJH7Yz"
-		]
-	},
-	{
-		"poolName": "EquiGems!",
-		"url": "https://equigems.online",
-		"searchStrings": [
-			"t1asFDxJpXgc5UyAsXVxEzsiJAdREP6YLh4"
-		]
-	},
-	{
-		"poolName": "TheDirtyDozenPool",
-		"url": "https://weare.thedirtydozenpool.com/",
-		"searchStrings": [
-			"t1L93bAxeNykL4d46J4V4jVTUEoxtfn2wkh"
-		]
-	},
-	{
-		"poolName": "YouMine Pool",
-		"url": "https://youmine.xyz",
-		"searchStrings": [
-			"t1XhR4FCrv3SBYKCHVHQiEiS3aWohePEY2c"
-		]
-	}
+    {
+        "poolName": "CloudPools",
+        "url": "http://zel.cloudpools.net/",
+        "searchStrings": [
+            "t1RLgxJn8vfhiYeAaDnSigBzWkSKGsBiaM4"
+        ]
+    },
+    {
+        "poolName": "CoinBlockers",
+        "url": "https://zel.coinblockers.com/",
+        "searchStrings": [
+            "t1RBpVZmcwgoMFdThtUrHGEqJVz6BRPExFi"
+        ]
+    },
+    {
+        "poolName": "equipool.1ds.us",
+        "url": "https://equipool.1ds.us/getting_started",
+        "searchStrings": [
+            "t1Nf8tSxVhQKiGhQXLp73XdWgX2aDAhMr5F"
+        ]
+    },
+    {
+        "poolName": "Windfall mining",
+        "url": "https://www.windfallmining.com/",
+        "searchStrings": [
+            "t1P1A4883Bs9TNNBzuYzbqzmWW6GXN3VZH7"
+        ]
+    },
+    {
+        "poolName": "VOIDr",
+        "url": "https://voidr.net/",
+        "searchStrings": [
+            "t1KPD9ymeg7sCzAhrSPQ2BgLDRM2XGYqb3S"
+        ]
+    },
+    {
+        "poolName": "Alt Pool",
+        "url": "https://altpool.pro/",
+        "searchStrings": [
+            "t1LPKVZh7aVJuXhSJUM4atuVSMYVjQJH7Yz"
+        ]
+    },
+    {
+        "poolName": "EquiGems!",
+        "url": "https://equigems.online",
+        "searchStrings": [
+            "t1asFDxJpXgc5UyAsXVxEzsiJAdREP6YLh4"
+        ]
+    },
+    {
+        "poolName": "TheDirtyDozenPool",
+        "url": "https://weare.thedirtydozenpool.com/",
+        "searchStrings": [
+            "t1L93bAxeNykL4d46J4V4jVTUEoxtfn2wkh"
+        ]
+    },
+    {
+        "poolName": "TheDirtyDozenPool",
+        "url": "http://www.thedirtydozenpool.com/",
+        "searchStrings": [
+            "t1fLG7y12psMJaDbdcWoyXQr2wUrYFunjeN"
+        ]
+    },
+    {
+        "poolName": "TheDirtyDozenPool",
+        "url": "https://equihash.thedirtydozenpool.com/",
+        "searchStrings": [
+            "t1d9G9FFEBA9pNBuB7psfST7oCB7jDhfuFi"
+        ]
+    },
+    {
+        "poolName": "YouMine Pool",
+        "url": "https://youmine.xyz",
+        "searchStrings": [
+            "t1d9G9FFEBA9pNBuB7psfST7oCB7jDhfuFi"
+        ]
+    }
 ]
