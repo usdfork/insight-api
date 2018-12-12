@@ -1,7 +1,7 @@
 {
   "name": "insight-api",
   "description": "A Zelcash blockchain REST and web socket API service for zelcash-bitcore Node.",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "repository": "git://github.com/TheTrunk/insight-api.git",
   "contributors": [
     {
@@ -43,6 +43,10 @@
     {
       "name": "TheTrunk",
       "email": "tadeas.kmenta@zel.cash"
+    },
+    {
+      "name": "Simon Liu",
+      "email": "simon@z.cash"
     }
   ],
   "bugs": {
