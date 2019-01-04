@@ -51,23 +51,9 @@
     },
     {
         "poolName": "TheDirtyDozenPool",
-        "url": "https://weare.thedirtydozenpool.com/",
+        "url": "https://equihash.pro/",
         "searchStrings": [
-            "t1L93bAxeNykL4d46J4V4jVTUEoxtfn2wkh"
-        ]
-    },
-    {
-        "poolName": "TheDirtyDozenPool",
-        "url": "http://www.thedirtydozenpool.com/",
-        "searchStrings": [
-            "t1fLG7y12psMJaDbdcWoyXQr2wUrYFunjeN"
-        ]
-    },
-    {
-        "poolName": "TheDirtyDozenPool",
-        "url": "https://equihash.thedirtydozenpool.com/",
-        "searchStrings": [
-            "t1d9G9FFEBA9pNBuB7psfST7oCB7jDhfuFi"
+            "t1VoiZk4sdvzstMbDTVgYDzBgBEL3dCPuUZ"
         ]
     },
     {
