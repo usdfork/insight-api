@@ -1,8 +1,8 @@
 {
   "name": "insight-api",
-  "description": "A Zelcash blockchain REST and web socket API service for zelcash-bitcore Node.",
+  "description": "A Zcash blockchain REST and web socket API service for bitcore-node-zecmate Node.",
   "version": "1.1.0",
-  "repository": "git://github.com/TheTrunk/insight-api.git",
+  "repository": "git://github.com/ZECmate/insight-api.git",
   "contributors": [
     {
       "name": "Gustavo Cortez",
@@ -41,7 +41,7 @@
       "email": "jack@z.cash"
     },
     {
-      "name": "TheTrunk",
+      "name": "Tadeas Kmenta",
       "email": "tadeas.kmenta@zel.cash"
     },
     {
@@ -50,18 +50,18 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/TheTrunk/insight-api/issues"
+    "url": "https://github.com/ZECmate/insight-api/issues"
   },
-  "homepage": "https://github.com/TheTrunk/insight-api",
+  "homepage": "https://github.com/ZECmate/insight-api",
   "license": "MIT",
   "keywords": [
     "insight",
     "insight api",
     "blockchain",
-    "zelcash api",
+    "zcash api",
     "blockchain api",
     "json",
-    "zelcash"
+    "zcash"
   ],
   "engines": {
     "node": ">=0.12.0"
@@ -80,8 +80,8 @@
     "lru-cache": "^4.0.1",
     "mongoose": "5.1.7",
     "morgan": "^1.7.0",
-    "bitcore-lib-zelcash": "git://github.com/TheTrunk/bitcore-lib-zelcash#master",
-    "bitcore-message-zelcash": "git://github.com/TheTrunk/bitcore-message-zelcash#master",
+    "bitcore-lib-zelcash": "git://github.com/TheTrunk/bitcore-lib-zelcash.git",
+    "bitcore-message-zelcash": "git://github.com/TheTrunk/bitcore-message-zelcash.git",
     "request": "^2.83.0"
   },
   "peerDependencies": {},

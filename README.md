@@ -13,17 +13,17 @@
 * [Difficulty](#difficulty-statistic)
 * [Total Supply](#total-supply-statistic)
 
-A ZelCash blockchain REST and web socket API service for [bitcore Node](https://github.com/TheTrunk/bitcore-node-zelcash).
+A Zcash blockchain REST and web socket API service for [bitcore Node](https://github.com/ZECmate/bitcore-node-zecmate).
 
-This is a backend-only service. If you're looking for the web frontend application, take a look at https://github.com/TheTrunk/insight-ui.
+This is a backend-only service. If you're looking for the web frontend application, take a look at https://github.com/ZECmate/insight-ui.
 
 The API endpoints will be available by default at: `http://localhost:3001/insight-api/`
 
 ## Prerequisites
 
-- [bitcore Node](https://github.com/TheTrunk/bitcore-node-zelcash)
+- [bitcore Node](https://github.com/ZECmate/bitcore-node-zecmate)
 
-**Note:** You can use an existing ZelCash data directory, however `txindex`, `addressindex`, `timestampindex` and `spentindex` needs to be set to true in `zelcash.conf`, as well as a few other additional fields.
+**Note:** You can use an existing Zcash data directory, however `txindex`, `addressindex`, `timestampindex` and `spentindex` needs to be set to true in `zcash.conf`, as well as a few other additional fields.
 
 ## Query Rate Limit
 
@@ -37,7 +37,7 @@ To protect the server, insight-api has a built it query rate limiter. It can be 
     }
   }
 ```
-With all the configuration options available: https://github.com/TheTrunk/insight-api/blob/master/lib/ratelimiter.js#L10-17
+With all the configuration options available: https://github.com/ZECmate/insight-api/blob/master/lib/ratelimiter.js#L10-17
 
 Or disabled entirely with:
 ``` json
@@ -427,7 +427,7 @@ POST response:
   /insight-api/peer
 ```
 
-### Status of the Zelcash Network
+### Status of the Zcash Network
 ```
   /insight-api/status?q=xxx
 ```
@@ -525,9 +525,9 @@ Sample output:
   price: "0.0294763"
 }
 ```
-### `zelcash` room: 
+### `zcash` room: 
 
-`zelcash/tx`: Returns a transformed tx as a json element detailing the transaction
+`zcash/tx`: Returns a transformed tx as a json element detailing the transaction
 Sample output:
 ```
 {
@@ -547,7 +547,7 @@ isRBF: true
 }
 ```
 
-`zelcash/block`: Returns a transformed block as a json element detailing the block
+`zcash/block`: Returns a transformed block as a json element detailing the block
 Sample output:
 ```
 {
