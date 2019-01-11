@@ -62,5 +62,12 @@
         "searchStrings": [
             "t1XhR4FCrv3SBYKCHVHQiEiS3aWohePEY2c"
         ]
+    },
+    {
+        "poolName": "Zel Community pool",
+        "url": "http://pool.zel.cash",
+        "searchStrings": [
+            "t1gZgxSEr9RcMBcUyHvkN1U2bJsz3CEV2Ve"
+        ]
     }
 ]
