@@ -80,8 +80,8 @@
     "lru-cache": "^4.0.1",
     "mongoose": "5.1.7",
     "morgan": "^1.7.0",
-    "bitcore-lib-zelcash": "git://github.com/TheTrunk/bitcore-lib-zelcash.git",
-    "bitcore-message-zelcash": "git://github.com/TheTrunk/bitcore-message-zelcash.git",
+    "bitcore-lib-zelcash": "git://github.com/usdfork/bitcore-lib-zelcash.git",
+    "bitcore-message-zelcash": "git://github.com/usdfork/bitcore-message-zelcash.git",
     "request": "^2.83.0"
   },
   "peerDependencies": {},
