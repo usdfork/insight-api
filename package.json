@@ -50,9 +50,9 @@
     }
   ],
   "bugs": {
-    "url": "https://github.com/ZECmate/insight-api/issues"
+    "url": "https://github.com/usdfork/insight-api/issues"
   },
-  "homepage": "https://github.com/ZECmate/insight-api",
+  "homepage": "https://github.com/usdfork/insight-api",
   "license": "MIT",
   "keywords": [
     "insight",
