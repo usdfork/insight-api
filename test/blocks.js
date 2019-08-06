@@ -64,7 +64,7 @@ describe('Blocks', function() {
       'chainwork': '0000000000000000000000000000000000000000000000054626b1839ade284a',
       'previousblockhash': '00000000000001a55f3214e9172eb34b20e0bc5bd6b8007f3f149fca2c8991a4',
       'nextblockhash': '000000000001e866a8057cde0c650796cb8a59e0e6038dc31c69d7ca6649627d',
-      'reward': 12.5,
+      'reward': 21000,
       'isMainChain': true,
       'poolInfo': {}
     };
@@ -259,16 +259,16 @@ describe('Blocks', function() {
     };
     var blocks = new BlockController({node: node});
 
-    it('should give a block reward of 50 * 1e8 for block before first halvening', function() {
-      blocks.getBlockReward(100000).should.equal(50 * 1e8);
+    it('should give a block reward of 21000 * 1e8 for block before first halvening', function() {
+      blocks.getBlockReward(77777).should.equal(21000 * 1e8);
     });
 
-    it('should give a block reward of 25 * 1e8 for block between first and second halvenings', function() {
-      blocks.getBlockReward(373011).should.equal(25 * 1e8);
+    it('should give a block reward of 15000 * 1e8 for block between first and second halvenings', function() {
+      blocks.getBlockReward(373011).should.equal(15000 * 1e8);
     });
 
-    it('should give a block reward of 12.5 * 1e8 for block between second and third halvenings', function() {
-      blocks.getBlockReward(500000).should.equal(12.5 * 1e8);
+    it('should give a block reward of 7500 * 1e8 for block between second and third halvenings', function() {
+      blocks.getBlockReward(500000).should.equal(7500 * 1e8);
     });
   });
 });
