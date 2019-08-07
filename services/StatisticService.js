@@ -1215,16 +1215,16 @@ StatisticService.prototype.getBlockReward = function (height, callback) {
     if (halvings >= 64) {
         return 0;
     }
-    
+
     // Mining slow start
     // The subsidy is ramped up linearly, skipping the middle payout of
     // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
     if (height < 2500) {
-      var subsidy = new BN(12.5 * 1e8 * (height - 1) / 5000)
+      var subsidy = new BN(21000 * 1e8 * (height - 1) / 5000)
     } else if (height < 5000) {
-      var subsidy = new BN(12.5 * 1e8 * height / 5000)
+      var subsidy = new BN(21000 * 1e8 * height / 5000)
     } else {
-      var subsidy = new BN(12.5 * 1e8)
+      var subsidy = new BN(21000 * 1e8)
     }
 
     subsidy = subsidy.shrn(halvings);
@@ -1250,11 +1250,11 @@ StatisticService.prototype.getBlockRewardr = function (height) {
     // The subsidy is ramped up linearly, skipping the middle payout of
     // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
     if (height < 2500) {
-      var subsidy = new BN(12.5 * 1e8 * (height - 1) / 5000)
+      var subsidy = new BN(21000 * 1e8 * (height - 1) / 5000)
     } else if (height < 5000) {
-      var subsidy = new BN(12.5 * 1e8 * height / 5000)
+      var subsidy = new BN(21000 * 1e8 * height / 5000)
     } else {
-      var subsidy = new BN(12.5 * 1e8)
+      var subsidy = new BN(21000 * 1e8)
     }
     subsidy = subsidy.shrn(halvings);
 
@@ -1278,7 +1278,7 @@ StatisticService.prototype.getPoolInfo = function (paddress) {
 StatisticService.prototype.getTotalSupply = function () {
     var blockHeight = this.node.services.bitcoind.height;
 
-    var supply = (new BigNumber(0)).plus((blockHeight) * 12.5).minus(31250); //minus slowstart
+    var supply = (new BigNumber(0)).plus((blockHeight) * 21000).minus(31250); //minus slowstart
 
     return supply;
 };
