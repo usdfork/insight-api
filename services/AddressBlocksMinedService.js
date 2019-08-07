@@ -25,7 +25,7 @@ function AddressBlocksMinedService(options) {
  * @param {Function} next
  * @return {*}
  */
-AddressBlocksMinedService.prototype.start = function (next) {
+AddressBlocksMinedServiceprototype.start = function (next) {
 
     var self = this;
 
@@ -58,7 +58,10 @@ AddressBlocksMinedService.prototype.start = function (next) {
 
             self.lastCheckedBlock = existingType.last_block_number;
             self.common.log.info('[AddressBlocksMinedService] getLastBlockByType set', self.lastCheckedBlock);
-            return callback();
+            return callba
+
+
+            ck();
 
         })
     },function (callback) {
@@ -278,7 +281,7 @@ AddressBlocksMinedService.prototype.getBlockReward = function(height) {
   }
 
   // Subsidy is cut in half every 840000 blocks which will occur approximately every 4 years.
-  var subsidy = new BN(12.5 * 1e8);
+  var subsidy = new BN(21000 * 1e8);
   subsidy = subsidy.shrn(halvings);
 
   return parseInt(subsidy.toString(10));
