@@ -1,9 +1,9 @@
 [
     {
-        "poolName": "Luxor",
-        "url": "https://mining.luxor.tech/zcash",
+        "poolName": "equihub",
+        "url": "https://bzc.equihub.pro",
         "searchStrings": [
-            "t1ShwyK2o1Pj2qTpz33tqG8aEMszcxxmax8"
+            "t1WwfpjGHsQtr8M3eYcbi9fVtCpTkBgzuhT"
         ]
     }
 ]
