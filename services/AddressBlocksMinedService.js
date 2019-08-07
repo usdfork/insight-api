@@ -271,15 +271,38 @@ AddressBlocksMinedService.prototype.processBlock = function (blockHeight, next) 
 };
 
 AddressBlocksMinedService.prototype.getBlockReward = function(height) {
-  var halvings = Math.floor(height / 840000);
-  // Force block reward to zero when right shift is undefined.
-  if (halvings >= 64) {
-    return 0;
-  }
+    var subsidy;
 
-  // Subsidy is cut in half every 840000 blocks which will occur approximately every 4 years.
-  var subsidy = new BN(21000 * 1e8);
-  subsidy = subsidy.shrn(halvings);
+    if (height == 0) {
+      subsidy = new BN(0);
+    } else if (height < 77777) {
+      subsidy = new BN(21000 * 1e8);
+    } else if (height < 300001) {
+      subsidy = new BN(15000 * 1e8);
+    } else if (height < 400001) {
+      subsidy = new BN(10000 * 1e8);
+    } else if (height < 500001) {
+      subsidy = new BN(5000 * 1e8);
+    } else if (height < 600001) {
+      subsidy = new BN(312.5 * 1e8);
+    } else if (height < 700001) {
+      subsidy = new BN(156.25 * 1e8);
+    } else if (height < 800001) {
+      subsidy = new BN(78 * 1e8);
+    } else if (height < 900001) {
+      subsidy = new BN(39 * 1e8);
+    } else if (height < 1000001) {
+      subsidy = new BN(19.5 * 1e8);
+    } else if (height < 3102401) {
+      subsidy = new BN(8 * 1e8);
+    } else {
+      var halvings = Math.floor(height - 3102400 / 2102400);
+      if (halvings >= 64) {
+        return 0;
+      }
+      subsidy = new BN(4 * 1e8);
+      subsidy = subsidy.shrn(halvings);
+    }
 
   return parseInt(subsidy.toString(10));
 };

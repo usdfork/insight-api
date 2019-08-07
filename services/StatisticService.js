@@ -1204,68 +1204,89 @@ StatisticService.prototype.getPoolsLastHour = function (nextCb) {
 
 };
 StatisticService.prototype.getBlockReward = function (height, callback) {
-    // Subsidy is cut in half every 840000 blocks which will occur approximately every 2.5 years.
-    var halvings;
-    if (height <= 5000) {
-      halvings = 0
+    var subsidy;
+
+    if (height == 0) {
+      subsidy = new BN(0);
+    } else if (height < 77777) {
+      subsidy = new BN(21000 * 1e8);
+    } else if (height < 300001) {
+      subsidy = new BN(15000 * 1e8);
+    } else if (height < 400001) {
+      subsidy = new BN(12500 * 1e8);
+    } else if (height < 500001) {
+      subsidy = new BN(625 * 1e8);
+    } else if (height < 600001) {
+      subsidy = new BN(312.5 * 1e8);
+    } else if (height < 700001) {
+      subsidy = new BN(156.25 * 1e8);
+    } else if (height < 800001) {
+      subsidy = new BN(78 * 1e8);
+    } else if (height < 900001) {
+      subsidy = new BN(39 * 1e8);
+    } else if (height < 1000001) {
+      subsidy = new BN(19.5 * 1e8);
+    } else if (height < 3102401) {
+      subsidy = new BN(8 * 1e8);
     } else {
-      halvings = Math.floor((height - (5000)) / 840000);
-    }
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64) {
+      var halvings = Math.floor(height - 3102400 / 2102400);
+      if (halvings >= 64) {
         return 0;
+      }
+      subsidy = new BN(4 * 1e8);
+      subsidy = subsidy.shrn(halvings);
     }
 
-    // Mining slow start
-    // The subsidy is ramped up linearly, skipping the middle payout of
-    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
-    if (height < 2500) {
-      var subsidy = new BN(21000 * 1e8 * (height - 1) / 5000)
-    } else if (height < 5000) {
-      var subsidy = new BN(21000 * 1e8 * height / 5000)
-    } else {
-      var subsidy = new BN(21000 * 1e8)
-    }
-
-    subsidy = subsidy.shrn(halvings);
+ 
     var sub;
     sub = parseInt(subsidy.toString(10));
     callback(null, sub);
 };
 
 StatisticService.prototype.getBlockRewardr = function (height) {
-    // Subsidy is cut in half every 657850 blocks which will occur approximately every 2.5 years.
-    var halvings;
-    if (height <= 5000) {
-      halvings = 0
-    } else {
-      halvings = Math.floor((height - (5000)) / 840000);
-    }
-    // Force block reward to zero when right shift is undefined.
-    if (halvings >= 64) {
-        return 0;
-    }
+    var subsidy;
 
-    // Mining slow start
-    // The subsidy is ramped up linearly, skipping the middle payout of
-    // MAX_SUBSIDY/2 to keep the monetary curve consistent with no slow start.
-    if (height < 2500) {
-      var subsidy = new BN(21000 * 1e8 * (height - 1) / 5000)
-    } else if (height < 5000) {
-      var subsidy = new BN(21000 * 1e8 * height / 5000)
+    if (height == 0) {
+      subsidy = new BN(0);
+    } else if (height < 77777) {
+      subsidy = new BN(21000 * 1e8);
+    } else if (height < 300001) {
+      subsidy = new BN(15000 * 1e8);
+    } else if (height < 400001) {
+      subsidy = new BN(12500 * 1e8);
+    } else if (height < 500001) {
+      subsidy = new BN(625 * 1e8);
+    } else if (height < 600001) {
+      subsidy = new BN(312.5 * 1e8);
+    } else if (height < 700001) {
+      subsidy = new BN(156.25 * 1e8);
+    } else if (height < 800001) {
+      subsidy = new BN(78 * 1e8);
+    } else if (height < 900001) {
+      subsidy = new BN(39 * 1e8);
+    } else if (height < 1000001) {
+      subsidy = new BN(19.5 * 1e8);
+    } else if (height < 3102401) {
+      subsidy = new BN(8 * 1e8);
     } else {
-      var subsidy = new BN(21000 * 1e8)
+      var halvings = Math.floor(height - 3102400 / 2102400);
+      if (halvings >= 64) {
+        return 0;
+      }
+      subsidy = new BN(4 * 1e8);
+      subsidy = subsidy.shrn(halvings);
     }
-    subsidy = subsidy.shrn(halvings);
 
     return parseInt(subsidy.toString(10));
 };
 
 StatisticService.prototype.getPoolInfo = function (paddress) {
     for (var k in this.poolStrings) {
-        if (paddress.toString().match(k)) {
-            this.poolStrings[k].address = paddress;
-            return this.poolStrings[k];
+        if (paddress != null) {
+            if (paddress.toString().match(k)) {
+                this.poolStrings[k].address = paddress;
+                return this.poolStrings[k];
+            }
         }
     }
     return {};
@@ -1276,9 +1297,42 @@ StatisticService.prototype.getPoolInfo = function (paddress) {
  * @return {BigNumber} supply - BigNumber representation of total supply
  */
 StatisticService.prototype.getTotalSupply = function () {
-    var blockHeight = this.node.services.bitcoind.height;
+    var height = this.node.services.bitcoind.height;
 
-    var supply = (new BigNumber(0)).plus((blockHeight) * 21000).minus(31250); //minus slowstart
+    var coins;
+    if (height == 0) {
+        coins = 0;
+    } else if (height < 77777) {
+        coins = height * 21000;
+    } else if (height < 300001) {
+        coins = (height - 200000)  * 2500 + 200000 * 21000;
+    } else if (height < 400001) {
+        coins = (height - 300000) * 1250 + 200000 * 12500 + (300001 - 200001) * 2500;
+    } else if (height < 500001) {
+        coins = (height - 400000) * 625 + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250;
+    } else if (height < 600001) {
+        coins = (height - 500000) * 312.5 + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250 + (500001 - 400001) * 625;
+    } else if (height < 700001) {
+        coins = (height - 600000) * 156.25 + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250 + (500001 - 400001) * 625 + (600001 - 500001) * 312.5;
+    } else if (height < 800001) {
+        coins = (height - 700000) * 78 + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250 + (500001 - 400001) * 625 + (600001 - 500001) * 312.5 + (700001 - 600001) * 156.25;
+    } else if (height < 900001) {
+        coins = (height - 800000) * 39 + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250 + (500001 - 400001) * 625 + (600001 - 500001) * 312.5 + (700001 - 600001) * 156.25 + (800001 - 700001) * 78;
+    } else if (height < 1000001) {
+        coins = (height - 900000) * 19.5 + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250 + (500001 - 400001) * 625 + (600001 - 500001) * 312.5 + (700001 - 600001) * 156.25 + (800001 - 700001) * 78 + (900001 - 800001) * 39;
+    } else if (height < 3102401) {
+        coins = (height - 1000000) * 8 + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250 + (500001 - 400001) * 625 + (600001 - 500001) * 312.5 + (700001 - 600001) * 156.25 + (800001 - 700001) * 78 + (900001 - 800001) * 39 + (1000001 - 900001) * 19.5;
+    } else {
+        var halvings = Math.floor(height - 3102400 / 2102400);
+        if (halvings >= 64) {
+            return 0;
+        }
+        var subsidy = 4
+        subsidy = subsidy / Math.pow(2, halvings)
+        coins = (height - 3102400) * subsidy + 200000 * 12500 + (300001 - 200001) * 2500 + (400001 - 300001) * 1250 + (500001 - 400001) * 625 + (600001 - 500001) * 312.5 + (700001 - 600001) * 156.25 + (800001 - 700001) * 78 + (900001 - 800001) * 39 + (1000001 - 900001) * 19.5 + (3102401 - 1000001) * 8;
+    }
+
+    var supply = (new BigNumber(0)).plus(coins.toString());
 
     return supply;
 };
